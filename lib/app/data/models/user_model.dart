@@ -32,4 +32,6 @@ class UserModel {
     ),
     balance: json['balance'] ?? 0.0
   );
+
+  get fullName => null;
 }

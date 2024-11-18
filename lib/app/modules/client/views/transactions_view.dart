@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:money_transfer_app/app/data/models/transaction_model.dart';
 import '../controllers/transaction_controller.dart';
 
+
 class ClientTransactionsView extends GetView<ClientTransactionController> {
   const ClientTransactionsView({super.key});
 
@@ -11,17 +12,17 @@ class ClientTransactionsView extends GetView<ClientTransactionController> {
     return Scaffold(
       appBar: AppBar(title: const Text('Mes Transactions')),
       body: Obx(() => ListView.builder(
-        itemCount: controller.transactions.length,
-        itemBuilder: (context, index) {
-          var transaction = controller.transactions[index];
-          return ListTile(
-            title: Text(transaction.type.toString().split('.').last),
-            subtitle: Text(transaction.timestamp.toString()),
-            trailing: Text('${transaction.amount} €'),
-            leading: _getTransactionIcon(transaction.type),
-          );
-        },
-      )),
+            itemCount: controller.transactions.length,
+            itemBuilder: (context, index) {
+              var transaction = controller.transactions[index];
+              return ListTile(
+                title: Text(transaction.type.toString().split('.').last),
+                subtitle: Text(transaction.timestamp.toString()),
+                trailing: Text('${transaction.amount} €'),
+                leading: _getTransactionIcon(transaction.type),
+              );
+            },
+          )),
     );
   }
 
@@ -34,7 +35,8 @@ class ClientTransactionsView extends GetView<ClientTransactionController> {
       case TransactionType.withdrawal:
         return const Icon(Icons.remove, color: Colors.red);
       default:
-        return Icon(Icons.transaction_outlined);
+        return const Icon(Icons.attach_money,
+            color: Colors.grey); // Use a valid icon
     }
   }
 }

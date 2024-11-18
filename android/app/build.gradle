@@ -7,6 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.my_money_transfer_app"
+    namespace "com.example.qr_code_scanner"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

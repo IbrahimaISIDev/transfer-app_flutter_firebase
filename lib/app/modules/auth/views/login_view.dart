@@ -7,6 +7,8 @@ class LoginView extends GetView<AuthController> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  LoginView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,13 +19,13 @@ class LoginView extends GetView<AuthController> {
           children: [
             TextFormField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
               validator: (value) => value!.isEmpty ? 'Email requis' : null,
             ),
             TextFormField(
               controller: _passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: 'Mot de passe'),
+              decoration: const InputDecoration(labelText: 'Mot de passe'),
               validator: (value) => value!.length < 6 
                 ? 'Mot de passe trop court' 
                 : null,
@@ -37,7 +39,7 @@ class LoginView extends GetView<AuthController> {
                   );
                 }
               },
-              child: Text('Connexion'),
+              child: const Text('Connexion'),
             )
           ],
         ),

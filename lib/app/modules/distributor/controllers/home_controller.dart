@@ -53,4 +53,6 @@ class DistributorHomeController extends GetxController {
       Get.snackbar('Erreur', e.toString());
     }
   }
+
+  logout() {}
 }

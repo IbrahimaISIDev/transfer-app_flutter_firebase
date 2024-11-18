@@ -11,10 +11,10 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Espace Distributeur'),
+        title: const Text('Espace Distributeur'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () => controller.logout(),
           )
         ],
@@ -24,7 +24,7 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
           // Carte de solde
           Card(
             child: Obx(() => ListTile(
-              title: Text('Solde'),
+              title: const Text('Solde'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -44,11 +44,11 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
 
           // Menu d'opérations
           ListTile(
-            title: Text('Dépôt'),
+            title: const Text('Dépôt'),
             onTap: () => _showDepositDialog(),
           ),
           ListTile(
-            title: Text('Retrait'),
+            title: const Text('Retrait'),
             onTap: () => _showWithdrawalDialog(),
           ),
 
@@ -78,16 +78,16 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
         children: [
           TextField(
             controller: operationController.phoneController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Numéro de téléphone',
               border: OutlineInputBorder(),
             ),
             keyboardType: TextInputType.phone,
           ),
-          SizedBox(height: 10),
+         const SizedBox(height: 10),
           TextField(
             controller: operationController.amountController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Montant',
               border: OutlineInputBorder(),
             ),
@@ -96,14 +96,14 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
         ],
       ),
       confirm: ElevatedButton(
-        child: Text('Confirmer'),
+        child: const Text('Confirmer'),
         onPressed: () {
           operationController.performDeposit();
           Get.back(); // Fermer le dialog
         },
       ),
       cancel: TextButton(
-        child: Text('Annuler'),
+        child: const Text('Annuler'),
         onPressed: () => Get.back(),
       ),
     );
@@ -116,16 +116,16 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
         children: [
           TextField(
             controller: operationController.phoneController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Numéro de téléphone',
               border: OutlineInputBorder(),
             ),
             keyboardType: TextInputType.phone,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           TextField(
             controller: operationController.amountController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Montant',
               border: OutlineInputBorder(),
             ),
@@ -134,14 +134,14 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
         ],
       ),
       confirm: ElevatedButton(
-        child: Text('Confirmer'),
+        child: const Text('Confirmer'),
         onPressed: () {
           operationController.performWithdrawal();
           Get.back(); // Fermer le dialog
         },
       ),
       cancel: TextButton(
-        child: Text('Annuler'),
+        child: const Text('Annuler'),
         onPressed: () => Get.back(),
       ),
     );

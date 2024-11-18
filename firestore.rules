@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+match /databases/{database}/documents {
+// Règles utilisateurs authentifiés
+match /users/{userId} {
+allow read, write: if request.auth != null && request.auth.uid == userId;
+}
+
+// Règles transactions
+match /transactions/{transactionId} {
+  allow create: if request.auth != null;
+  allow read: if request.auth != null && 
+               (resource.data.sender == request.auth.uid || 
+                resource.data.receiver == request.auth.uid);
+}
+}
+}

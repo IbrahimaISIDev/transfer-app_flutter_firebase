@@ -9,7 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+  font_awesome_flutter: ^10.4.0
+  #cupertino_icons: ^1.0.3
+  #flutter_svg: ^1.0.32
+  #cupertino_icons_flutter: ^1.0.3
   # State Management
   get: ^4.6.5
 
@@ -18,8 +21,10 @@ dependencies:
   firebase_auth: ^4.7.0
   cloud_firestore: ^4.8.0
 
-  # Autres
-  qr_code_scanner: ^1.0.1
+ # QR Code
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^3.5.7
+
   intl: ^0.18.0
 
 dev_dependencies:
