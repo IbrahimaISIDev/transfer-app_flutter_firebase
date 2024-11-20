@@ -1,0 +1,50 @@
+name: money_transfer_app
+description: Application mobile de transfert d'argent
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"  # Mise à jour pour meilleure compatibilité
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI Components
+  font_awesome_flutter: ^10.6.0
+  curved_navigation_bar: ^1.0.3
+  google_fonts: ^5.1.0
+  
+  # State Management
+  get: ^4.6.6
+  
+  #Firebase
+  #Auth SSO
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  google_sign_in: ^6.1.6
+
+
+  
+  # QR Code
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^3.5.7
+  
+  # Internationalization
+  intl: ^0.19.0
+  
+  # Optionnels (décommentez si nécessaire)
+  # flutter_svg: ^2.0.9
+  # cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1  # Mise à jour pour les dernières règles de linting
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
