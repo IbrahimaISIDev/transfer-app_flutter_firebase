@@ -84,14 +84,17 @@ class FirebaseService {
   // Ajoute cette méthode pour l'authentification Google
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      // Déclencher le flux d'authentification Google
+      // Déconnexion préalable pour forcer l'affichage du sélecteur
+      await _googleSignIn.signOut();
+
+      // Déclencher le flux d'authentification Google avec le sélecteur de compte
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         throw Exception('Sélection du compte Google annulée');
       }
 
-      // Obtenir les détails d'authentification du requête
+      // Obtenir les détails d'authentification de la requête
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
@@ -112,8 +115,7 @@ class FirebaseService {
           'email': userCredential.user!.email,
           'fullName': userCredential.user!.displayName,
           'phoneNumber': userCredential.user!.phoneNumber ?? '',
-          'userType':
-              'client', // Par défaut, les utilisateurs Google sont des clients
+          'userType': 'client',
           'balance': 0.0,
           'createdAt': FieldValue.serverTimestamp(),
           'lastLogin': FieldValue.serverTimestamp(),
@@ -161,23 +163,38 @@ class FirebaseService {
     }
   }
 
-  Future<UserModel> getUserDetails(String uid) async {
+  Future<UserModel?> getUserDetails(String userId) async {
     try {
-      DocumentSnapshot doc =
-          await _firestore.collection('users').doc(uid).get();
-
-      if (!doc.exists) {
-        throw Exception('User not found');
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (doc.exists) {
+        return UserModel.fromJson(doc.data()!);
       }
-
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      data['id'] = uid;
-
-      return UserModel.fromJson(data);
+      return null;
     } catch (e) {
-      print('Error getting user details: $e');
       rethrow;
     }
+  }
+
+  Future<UserModel?> getUserById(String userId) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        return UserModel.fromJson(userDoc.data()!);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateUserBalance(String userId, double amount) async {
+    await _firestore.collection('users').doc(userId).update({
+      'balance': FieldValue.increment(amount),
+    });
   }
 
   Future<double> getUserBalance() async {
@@ -302,8 +319,7 @@ class FirebaseService {
       throw Exception('Échec du retrait : ${e.toString()}');
     }
   }
-
-  // Méthode pour créer un transfert
+   // Méthode pour créer un transfert
   Future<void> createTransfer(String receiverPhone, double amount) async {
     try {
       String senderId = getCurrentUserId();

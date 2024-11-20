@@ -7,9 +7,9 @@ class TransactionProvider {
   Future<void> createTransaction(TransactionModel transaction) async {
     try {
       await _firestore
-        .collection('transactions')
-        .doc(transaction.id)
-        .set(transaction.toJson());
+          .collection('transactions')
+          .doc(transaction.id)
+          .set(transaction.toJson());
     } catch (e) {
       print('Erreur de création de transaction : $e');
     }
@@ -18,17 +18,42 @@ class TransactionProvider {
   Future<List<TransactionModel>> getUserTransactions(String userId) async {
     try {
       var querySnapshot = await _firestore
-        .collection('transactions')
-        .where('senderId', isEqualTo: userId)
-        .orderBy('timestamp', descending: true)
-        .get();
+          .collection('transactions')
+          .where('senderId', isEqualTo: userId)
+          .orderBy('timestamp', descending: true)
+          .get();
 
       return querySnapshot.docs
-        .map((doc) => TransactionModel.fromJson(doc.data()))
-        .toList();
+          .map((doc) => TransactionModel.fromJson(doc.data()))
+          .toList();
     } catch (e) {
       print('Erreur de récupération des transactions : $e');
       return [];
+    }
+  }
+
+  Future createScheduledTransaction(TransactionModel transaction) async {
+    try {
+      await _firestore
+          .collection('scheduled_transactions')
+          .doc(transaction.id)
+          .set(transaction.toJson());
+    } catch (e) {
+      print('Erreur de création de transaction programmée : $e');
+    }
+  }
+
+  // Méthode pour exécuter les transferts programmés
+  Future processScheduledTransactions() async {
+    var now = DateTime.now();
+    var scheduledTransactions = await _firestore
+        .collection('scheduled_transactions')
+        .where('scheduledDate', isLessThanOrEqualTo: now)
+        .get();
+
+    for (var doc in scheduledTransactions.docs) {
+      var transaction = TransactionModel.fromJson(doc.data());
+      // Logique d'exécution du transfert
     }
   }
 }

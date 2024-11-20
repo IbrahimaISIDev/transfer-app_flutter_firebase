@@ -79,7 +79,7 @@ class WithdrawalView extends GetView<DistributorOperationController> {
       decoration: InputDecoration(
         labelText: 'Montant du retrait',
         prefixIcon: const Icon(Icons.euro),
-        suffixText: '€',
+        suffixText: 'F CFA',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),

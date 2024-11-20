@@ -1,4 +1,7 @@
 import 'package:get/get.dart';
+import 'package:money_transfer_app/app/modules/client/views/transfer_multiple.dart';
+import 'package:money_transfer_app/app/modules/client/views/transfer_schedule.dart';
+import 'package:money_transfer_app/app/modules/client/views/transfer_view.dart';
 import 'package:money_transfer_app/app/routes/app_routes.dart';
 import '../modules/home/welcome_home_screen.dart';
 import '../modules/auth/views/login_view.dart';
@@ -11,30 +14,40 @@ import '../modules/distributor/bindings/distributor_binding.dart';
 
 class AppPages {
   static final routes = [
+    GetPage(name: AppRoutes.INITIAL, page: () => const WelcomeView()),
     GetPage(
-      name: AppRoutes.INITIAL, 
-      page: () => const WelcomeView()
+        name: AppRoutes.LOGIN, page: () => LoginView(), binding: AuthBinding()),
+    GetPage(
+        name: AppRoutes.REGISTER,
+        page: () => RegisterView(),
+        binding: AuthBinding()),
+    GetPage(
+        name: AppRoutes.CLIENT_HOME,
+        page: () => const ClientHomeView(),
+        binding: ClientBinding()),
+    GetPage(
+        name: AppRoutes.DISTRIBUTOR_HOME,
+        page: () => DistributorHomeView(),
+        binding: DistributorBinding()),
+    GetPage(
+      name: AppRoutes.CLIENT_TRANSFER_SIMPLE,
+      page: () => ClientTransferView(),
+      binding: ClientBinding(),
     ),
     GetPage(
-      name: AppRoutes.LOGIN, 
-      page: () => LoginView(),
-      binding: AuthBinding()
+      name: AppRoutes.CLIENT_TRANSFER_MULTIPLE,
+      page: () => ClientMultipleTransferView(),
+      binding: ClientBinding(),
     ),
     GetPage(
-      name: AppRoutes.REGISTER, 
-      page: () => RegisterView(),
-      binding: AuthBinding()
+      name: AppRoutes.CLIENT_TRANSFER_SCHEDULED,
+      page: () => ClientScheduledTransferView(),
+      binding: ClientBinding(),
     ),
-    GetPage(
-      name: AppRoutes.CLIENT_HOME, 
-      page: () => const ClientHomeView(),
-      binding: ClientBinding()
-    ),
-    GetPage(
-      name: AppRoutes.DISTRIBUTOR_HOME, 
-      page: () => DistributorHomeView(),
-      binding: DistributorBinding()
-    ),
+    GetPage(name: AppRoutes.CLIENT_TRANSFER_HISTORY,
+    page: () => ClientTransferView(),
+    binding: ClientBinding()
+    )
   ];
 }
 

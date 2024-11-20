@@ -89,7 +89,7 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
               children: [
                 Text(
                   controller.isBalanceVisible.value
-                      ? '${controller.balance.value.toStringAsFixed(2)} €'
+                      ? '${controller.balance.value.toStringAsFixed(2)} F CFA'
                       : '••••••',
                   style: const TextStyle(
                     color: Colors.white,
@@ -239,7 +239,7 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
                 //   ),
                 // ),
                 trailing: Text(
-                  '${transaction.amount.toStringAsFixed(2)} €',
+                  '${transaction.amount.toStringAsFixed(2)} F CFA',
                   style: TextStyle(
                     color: _getTransactionColor(transaction.type as String),
                     fontWeight: FontWeight.bold,

@@ -8,7 +8,7 @@ class AppHelpers {
 
   // Formater un montant
   static String formatCurrency(double amount) {
-    return NumberFormat.currency(locale: 'fr_FR', symbol: '€').format(amount);
+    return NumberFormat.currency(locale: 'fr_FR', symbol: 'F CFA').format(amount);
   }
 
   // Générer un numéro de transaction unique

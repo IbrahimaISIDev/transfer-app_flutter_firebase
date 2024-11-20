@@ -28,7 +28,7 @@ class DistributorOperationController extends GetxController {
         receiverId: user.id!,
         amount: amount,
         timestamp: DateTime.now(),
-        type: TransactionType.deposit
+        type: TransactionType.deposit,
       );
 
       await _transactionProvider.createTransaction(transaction);
@@ -55,7 +55,7 @@ class DistributorOperationController extends GetxController {
         receiverId: user.id !,
         amount: amount,
         timestamp: DateTime.now(),
-        type: TransactionType.withdrawal
+        type: TransactionType.withdrawal, scheduledDate: null
       );
 
       await _transactionProvider.createTransaction(transaction);

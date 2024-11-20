@@ -1,9 +1,12 @@
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 
-class AuthBinding implements Bindings {
+class AuthBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AuthController>(() => AuthController());
+    // Vérifier si AuthController est déjà enregistré
+    if (!Get.isRegistered<AuthController>()) {
+      Get.put<AuthController>(AuthController(), permanent: true);
+    }
   }
 }

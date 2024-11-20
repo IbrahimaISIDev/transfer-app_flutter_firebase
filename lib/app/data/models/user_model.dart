@@ -32,7 +32,8 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     try {
       return UserModel(
-        id: json['id']?.toString(),
+        id: json['id']
+            ?.toString(), // Assurez-vous que l'ID peut être converti en chaîne
         email: json['email']?.toString() ?? '',
         phoneNumber: json['phoneNumber']?.toString() ?? '',
         fullName: json['fullName']?.toString(),
@@ -87,62 +88,3 @@ class UserModel {
     );
   }
 }
-
-/* enum UserType {
-  client,
-  distributor
-}
-
-class UserModel {
-  final String? id;
-  final String email;
-  final String? phoneNumber;
-  final String? fullName;
-  final String? photoUrl;
-  final UserType userType;
-  final double balance;
-
-  UserModel({
-    this.id,
-    required this.email,
-    this.phoneNumber,
-    this.fullName,
-    this.photoUrl,
-    this.userType = UserType.client,
-    this.balance = 0.0,
-  });
-
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'],
-      email: json['email'],
-      phoneNumber: json['phoneNumber'],
-      fullName: json['fullName'] ?? json['name'],
-      photoUrl: json['photoUrl'],
-      userType: _parseUserType(json['userType']),
-      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'email': email,
-      'phoneNumber': phoneNumber,
-      'fullName': fullName,
-      'photoUrl': photoUrl,
-      'userType': userType.toString().split('.').last,
-      'balance': balance,
-    };
-  }
-
-  static UserType _parseUserType(String? typeString) {
-    switch (typeString) {
-      case 'distributor':
-        return UserType.distributor;
-      case 'client':
-      default:
-        return UserType.client;
-    }
-  }
-} */

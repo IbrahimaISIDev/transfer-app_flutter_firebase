@@ -80,7 +80,7 @@ class DistributorDepositView extends GetView<DistributorOperationController> {
       decoration: InputDecoration(
         labelText: 'Montant',
         prefixIcon: const Icon(Icons.euro),
-        suffixText: '€',
+        suffixText: 'F CFA',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),

@@ -18,7 +18,7 @@ class ClientTransactionsView extends GetView<ClientTransactionController> {
               return ListTile(
                 title: Text(transaction.type.toString().split('.').last),
                 subtitle: Text(transaction.timestamp.toString()),
-                trailing: Text('${transaction.amount} €'),
+                trailing: Text('${transaction.amount} F CFA'),
                 leading: _getTransactionIcon(transaction.type),
               );
             },

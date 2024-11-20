@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:money_transfer_app/app/data/models/transaction_model.dart';
 import 'package:money_transfer_app/app/data/services/firebase_service.dart';
+import 'package:money_transfer_app/app/data/models/user_model.dart';
 
 class ClientHomeController extends GetxController {
   final FirebaseService _firebaseService = FirebaseService();
@@ -9,61 +10,44 @@ class ClientHomeController extends GetxController {
   final RxBool isBalanceVisible = true.obs;
   final RxList<TransactionModel> transactions = <TransactionModel>[].obs;
   
-  // Add current user property
-  final Rx<dynamic> currentUser = Rx<dynamic>(null);
+  // Modify to use Rx<UserModel>
+  final Rx<UserModel?> currentUser = Rx<UserModel?>(null);
 
   @override
   void onInit() {
     super.onInit();
-    _fetchBalance();
-    _fetchTransactions();
-    _fetchCurrentUser();
+    _fetchUserData();
   }
 
-  Future _fetchBalance() async {
-    balance.value = await _firebaseService.getUserBalance();
+  Future _fetchUserData() async {
+    try {
+      String userId = _firebaseService.getCurrentUserId();
+      currentUser.value = await _firebaseService.getUserDetails(userId);
+      
+      if (currentUser.value != null) {
+        balance.value = currentUser.value!.balance ?? 0.0;
+        transactions.value = await _firebaseService.getUserTransactions();
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
-  Future _fetchTransactions() async {
-    transactions.value = await _firebaseService.getUserTransactions();
-  }
-
-  Future _fetchCurrentUser() async {
-    currentUser.value = _firebaseService.getCurrentUserId();
-  }
-
-  // New method to refresh all data
   Future refreshData() async {
-    await Future.wait([
-      _fetchBalance(),
-      _fetchTransactions(),
-      _fetchCurrentUser()
-    ]);
+    await _fetchUserData();
   }
 
-  // Getter for recent transactions (last 5)
   List<TransactionModel> get recentTransactions {
-    // ignore: invalid_use_of_protected_member
-    return transactions.value.length > 5 
-      // ignore: invalid_use_of_protected_member
-      ? transactions.value.sublist(0, 5) 
-      // ignore: invalid_use_of_protected_member
-      : transactions.value;
+    return transactions.length > 25 
+        ? transactions.sublist(0, 5) 
+        : transactions;
   }
+
+  String get userName => currentUser.value?.fullName ?? 'Client';
+  String get userEmail => currentUser.value?.email ?? 'Email inconnu';
+  String get userPhone => currentUser.value?.phoneNumber ?? 'Téléphone inconnu';
 
   void toggleBalanceVisibility() {
     isBalanceVisible.toggle();
-  }
-
-  Future initiateTransfer(
-    String receiverPhone,
-    double amount
-  ) async {
-    try {
-      await _firebaseService.createTransfer(receiverPhone, amount);
-      await refreshData(); // Use the new refresh method
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-    }
   }
 }

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum TransactionType {
   transfer,
   deposit,
-  withdrawal
+  withdrawal,
 }
 
 class TransactionModel {
@@ -14,6 +14,7 @@ class TransactionModel {
   final TransactionType type;
   final DateTime? timestamp;
   final String? description;
+  final DateTime? scheduledDate;
 
   TransactionModel({
     this.id,
@@ -23,19 +24,25 @@ class TransactionModel {
     required this.type,
     this.timestamp,
     this.description,
+    this.scheduledDate,
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
-      id: json['id'],
-      senderId: json['senderId'],
-      receiverId: json['receiverId'],
+      id: json['id'] as String?,
+      senderId: json['senderId'] as String?,
+      receiverId: json['receiverId'] as String?,
       amount: (json['amount'] as num).toDouble(),
-      type: _parseTransactionType(json['type']),
+      type: _parseTransactionType(json['type'] as String?),
       timestamp: (json['timestamp'] as Timestamp?)?.toDate(),
-      description: json['description'],
+      description: json['description'] as String?,
+      scheduledDate: (json['scheduledDate'] as Timestamp?)?.toDate(),
     );
   }
+
+  get receiverPhone => null;
+
+  get date => null;
 
   Map<String, dynamic> toJson() {
     return {
@@ -44,8 +51,10 @@ class TransactionModel {
       'receiverId': receiverId,
       'amount': amount,
       'type': type.toString().split('.').last,
-      'timestamp': timestamp,
+      'timestamp': timestamp != null ? Timestamp.fromDate(timestamp!) : null,
       'description': description,
+      'scheduledDate':
+          scheduledDate != null ? Timestamp.fromDate(scheduledDate!) : null,
     };
   }
 
@@ -58,7 +67,7 @@ class TransactionModel {
       case 'withdrawal':
         return TransactionType.withdrawal;
       default:
-        return TransactionType.transfer;
+        throw ArgumentError('Invalid transaction type: $typeString');
     }
   }
 }
