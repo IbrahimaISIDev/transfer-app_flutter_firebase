@@ -71,5 +71,31 @@ class UserProvider {
     }
   }
 
-  updateUserLimit(String s, double amount) {}
+  Future<void> updateUserMonthlyLimit(String userId, double newLimit) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .update({'monthlyTransactionLimit': newLimit});
+      print("Limite mensuelle mise à jour avec succès.");
+    } catch (e) {
+      print('Erreur de mise à jour de la limite mensuelle : $e');
+      // Vous pouvez relancer l'erreur si nécessaire
+      rethrow;
+    }
+  }
+
+  Future<void> updateUserLimit(String userId, double newLimit) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .update({'transactionLimit': newLimit});
+      print("Limite mise à jour avec succès.");
+    } catch (e) {
+      print('Erreur de mise à jour de la limite : $e');
+      // Relance l'erreur si nécessaire
+      rethrow;
+    }
+  }
 }

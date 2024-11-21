@@ -38,7 +38,7 @@ class ClientHomeController extends GetxController {
   }
 
   List<TransactionModel> get recentTransactions {
-    return transactions.length > 25 
+    return transactions.length > 35
         ? transactions.sublist(0, 5) 
         : transactions;
   }

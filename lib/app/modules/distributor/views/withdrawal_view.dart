@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:money_transfer_app/app/modules/distributor/controllers/withdrawal_operation_controller.dart';
 import 'package:money_transfer_app/core/values/validators.dart';
 import '../controllers/operation_controller.dart';
 
-class WithdrawalView extends GetView<DistributorOperationController> {
+class WithdrawalView extends GetView<DistributorWithdrawalController> {
   final _formKey = GlobalKey<FormState>();
   final MobileScannerController scannerController = MobileScannerController();
 

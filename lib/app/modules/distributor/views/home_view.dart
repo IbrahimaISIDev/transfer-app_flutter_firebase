@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_transfer_app/app/data/models/transaction_model.dart';
 import 'package:money_transfer_app/app/routes/app_routes.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/operation_controller.dart';
@@ -229,33 +230,55 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16),
                     leading: CircleAvatar(
-                      backgroundColor:
-                          _getTransactionColor(transaction.type as String),
+                      backgroundColor: _getTransactionColor(transaction.type),
                       child: Icon(
-                        _getTransactionIcon(transaction.type as String),
+                        _getTransactionIcon(transaction.type),
                         color: Colors.white,
                       ),
                     ),
                     title: Text(
-                      _getTransactionTitle(transaction.type as String),
+                      _getTransactionTitle(transaction.type),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // subtitle: Text(
-                    //   DateFormat('dd/MM/yyyy HH:mm').format(transaction.timestamp),
-                    //   style: TextStyle(
-                    //     color: Colors.grey[600],
-                    //     fontSize: 12,
-                    //   ),
-                    // ),
-                    trailing: Text(
-                      '${transaction.amount.toStringAsFixed(2)} F CFA',
-                      style: TextStyle(
-                        color: _getTransactionColor(transaction.type as String),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Afficher le numéro de téléphone du bénéficiaire
+                        if (transaction.metadata['phoneNumber'] != null)
+                          Text(
+                            'N° : ${transaction.metadata['phoneNumber']}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
+                          ),
+                        // Afficher l'heure de la transaction
+                        if (transaction.timestamp != null)
+                          Text(
+                            DateFormat('dd/MM/yyyy HH:mm')
+                                .format(transaction.timestamp!),
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
+                    ),
+                    trailing: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${transaction.amount.toStringAsFixed(2)} F CFA',
+                          style: TextStyle(
+                            color: _getTransactionColor(transaction.type),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -265,33 +288,34 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
     );
   }
 
-  Color _getTransactionColor(String type) {
-    switch (type.toLowerCase()) {
-      case 'deposit':
+// Update these methods to work with TransactionType directly
+  Color _getTransactionColor(TransactionType type) {
+    switch (type) {
+      case TransactionType.deposit:
         return Colors.green;
-      case 'withdrawal':
+      case TransactionType.withdrawal:
         return Colors.orange;
       default:
         return Colors.blue;
     }
   }
 
-  IconData _getTransactionIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'deposit':
+  IconData _getTransactionIcon(TransactionType type) {
+    switch (type) {
+      case TransactionType.deposit:
         return Icons.add_circle_outline;
-      case 'withdrawal':
+      case TransactionType.withdrawal:
         return Icons.remove_circle_outline;
       default:
         return Icons.swap_horiz;
     }
   }
 
-  String _getTransactionTitle(String type) {
-    switch (type.toLowerCase()) {
-      case 'deposit':
+  String _getTransactionTitle(TransactionType type) {
+    switch (type) {
+      case TransactionType.deposit:
         return 'Dépôt';
-      case 'withdrawal':
+      case TransactionType.withdrawal:
         return 'Retrait';
       default:
         return 'Transaction';

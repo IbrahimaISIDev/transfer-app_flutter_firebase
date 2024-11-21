@@ -61,12 +61,15 @@ class ClientTransactionController extends GetxController {
 
       // Créer la transaction
       TransactionModel transaction = TransactionModel(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          senderId: currentUserId,
-          receiverId: receiver.id!,
-          amount: amount,
-          timestamp: DateTime.now(),
-          type: TransactionType.transfer, status: '', metadata: {});
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        senderId: currentUserId,
+        receiverId: receiver.id!,
+        amount: amount,
+        type: TransactionType.transfer,
+        status: '', // Ensure this is a string
+        metadata: {},
+        timestamp: DateTime.now(),
+      );
 
       await _transactionProvider.createTransaction(transaction);
 
@@ -137,7 +140,9 @@ class ClientTransactionController extends GetxController {
           amount: amount,
           timestamp: DateTime.now(),
           scheduledDate: scheduledDate,
-          type: TransactionType.transfer, status: '', metadata: {});
+          type: TransactionType.transfer,
+          status: '',
+          metadata: {});
 
       await _transactionProvider.createScheduledTransaction(transaction);
       Get.snackbar('Succès', 'Transfert programmé créé');

@@ -1,14 +1,20 @@
+import 'package:flutter/material.dart';
+
+/// Enumération des types d'utilisateurs.
 enum UserType { client, distributor }
 
+/// Modèle de données pour les utilisateurs.
 class UserModel {
-  final String? id;
-  final String email;
-  final String phoneNumber;
-  final String? fullName;
-  final String? agentCode;
-  final UserType userType;
-  double balance;
+  final String? id; // ID unique de l'utilisateur (facultatif).
+  final String email; // Email de l'utilisateur.
+  final String phoneNumber; // Numéro de téléphone.
+  final String? fullName; // Nom complet (facultatif).
+  final String? agentCode; // Code agent (facultatif).
+  final UserType userType; // Type d'utilisateur (client ou distributeur).
+  double balance; // Solde de l'utilisateur.
+  double monthlyTransactionLimit; // Limite mensuelle des transactions.
 
+  /// Constructeur du modèle utilisateur.
   UserModel({
     this.id,
     required this.email,
@@ -17,24 +23,42 @@ class UserModel {
     this.agentCode,
     required this.userType,
     this.balance = 0.0,
+    this.monthlyTransactionLimit = 200000.0, // Valeur par défaut.
   });
 
-  // Define the canDeposit getter
+  /// Vérifie si l'utilisateur peut déposer de l'argent.
   bool get canDeposit {
-    // Example logic: only clients can deposit
-    return userType == UserType.distributor;
+    return userType ==
+        UserType.client; // Seuls les distributeurs peuvent déposer.
   }
 
+  /// Vérifie si l'utilisateur peut retirer de l'argent.
+  bool get canWithdraw {
+    return userType ==
+        UserType.client; // Seuls les distributeurs peuvent retirer.
+  }
+
+  /// Vérifie si l'utilisateur peut débloquer la limite de transactions.
+  bool get canUnlimit {
+    return userType ==
+        UserType.client; // Seuls les distributeurs peuvent débloquer.
+  }
+
+  /// Conversion du modèle utilisateur en carte JSON pour Firestore.
   Map<String, dynamic> toJson() => {
         'id': id,
         'email': email,
         'phoneNumber': phoneNumber,
         'fullName': fullName,
         'agentCode': agentCode,
-        'userType': userType.toString().split('.').last,
+        'userType':
+            userType.toString().split('.').last, // Convertir l'enum en chaîne.
         'balance': balance,
+        'monthlyTransactionLimit':
+            monthlyTransactionLimit, // Ajouté pour Firestore.
       };
 
+  /// Création d'un utilisateur à partir d'une carte JSON (Firestore).
   factory UserModel.fromJson(Map<String, dynamic> json) {
     try {
       return UserModel(
@@ -47,14 +71,20 @@ class UserModel {
         balance: (json['balance'] is num)
             ? (json['balance'] as num).toDouble()
             : double.tryParse(json['balance']?.toString() ?? '0') ?? 0.0,
+        monthlyTransactionLimit: (json['monthlyTransactionLimit'] is num)
+            ? (json['monthlyTransactionLimit'] as num).toDouble()
+            : double.tryParse(
+                    json['monthlyTransactionLimit']?.toString() ?? '0') ??
+                0.0,
       );
     } catch (e) {
-      print('Error parsing UserModel: $e');
-      print('JSON data: $json');
+      debugPrint('Erreur lors du parsing UserModel: $e');
+      debugPrint('JSON reçu: $json');
       rethrow;
     }
   }
 
+  /// Méthode privée pour analyser le type d'utilisateur.
   static UserType _parseUserType(String? type) {
     switch (type?.toLowerCase()) {
       case 'distributor':
@@ -62,17 +92,19 @@ class UserModel {
       case 'client':
         return UserType.client;
       default:
-        return UserType.client;
+        return UserType.client; // Par défaut, on retourne 'client'.
     }
   }
 
+  /// Surcharge de `toString` pour afficher les détails de l'utilisateur.
   @override
   String toString() {
     return 'UserModel(id: $id, email: $email, phoneNumber: $phoneNumber, '
         'fullName: $fullName, agentCode: $agentCode, userType: $userType, '
-        'balance: $balance)';
+        'balance: $balance, monthlyTransactionLimit: $monthlyTransactionLimit)';
   }
 
+  /// Création d'une copie du modèle avec des valeurs mises à jour.
   UserModel copyWith({
     String? id,
     String? email,
@@ -81,6 +113,7 @@ class UserModel {
     String? agentCode,
     UserType? userType,
     double? balance,
+    double? monthlyTransactionLimit,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -90,6 +123,8 @@ class UserModel {
       agentCode: agentCode ?? this.agentCode,
       userType: userType ?? this.userType,
       balance: balance ?? this.balance,
+      monthlyTransactionLimit:
+          monthlyTransactionLimit ?? this.monthlyTransactionLimit,
     );
   }
 }
