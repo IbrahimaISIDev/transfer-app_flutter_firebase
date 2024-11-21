@@ -146,3 +146,4 @@ app.*.symbols
 **/android/app/google-services.json
 **/android/app/money-transfer-app-2024.json
 **/ios/Runner/GoogleService-Info.plist
+android/app/money-transfer-app-2024.json
