@@ -50,8 +50,8 @@ class TransactionHistoryView extends GetView<ClientTransactionController> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Destinataire: ${transaction.receiverPhone}'),
-                      Text('Date: ${transaction.date}'),
+                      Text('Destinataire: ${transaction.receiverId}'),
+                      Text('Date: ${transaction.timestamp}'),
                     ],
                   ),
                   trailing: Icon(
@@ -96,12 +96,12 @@ class TransactionDetailView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Destinataire: ${transaction.receiverPhone}',
+              'Destinataire: ${transaction.receiverId}',
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 16),
             Text(
-              'Date: ${transaction.date}',
+              'Date: ${transaction.timestamp?.toLocal()}',
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 16),

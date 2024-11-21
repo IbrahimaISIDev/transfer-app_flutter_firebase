@@ -2,6 +2,9 @@ import 'package:get/get.dart';
 import 'package:money_transfer_app/app/modules/client/views/transfer_multiple.dart';
 import 'package:money_transfer_app/app/modules/client/views/transfer_schedule.dart';
 import 'package:money_transfer_app/app/modules/client/views/transfer_view.dart';
+import 'package:money_transfer_app/app/modules/distributor/views/deplafonnement_view.dart';
+import 'package:money_transfer_app/app/modules/distributor/views/deposit_view.dart';
+import 'package:money_transfer_app/app/modules/distributor/views/withdrawal_view.dart';
 import 'package:money_transfer_app/app/routes/app_routes.dart';
 import '../modules/home/welcome_home_screen.dart';
 import '../modules/auth/views/login_view.dart';
@@ -30,6 +33,18 @@ class AppPages {
         page: () => DistributorHomeView(),
         binding: DistributorBinding()),
     GetPage(
+        name: AppRoutes.DISTRIBUTOR_UNLIMIT_VIEW,
+        page: () => UnlimitView(),
+        binding: DistributorBinding()),
+    GetPage(
+        name: AppRoutes.DISTRIBUTOR_DEPOSIT,
+        page: () => DistributorDepositView(),
+        binding: DistributorBinding()),
+    GetPage(
+        name: AppRoutes.DISTRIBUTOR_WITHDRAWAL,
+        page: () => WithdrawalView(),
+        binding: DistributorBinding()),
+    GetPage(
       name: AppRoutes.CLIENT_TRANSFER_SIMPLE,
       page: () => ClientTransferView(),
       binding: ClientBinding(),
@@ -44,10 +59,10 @@ class AppPages {
       page: () => ClientScheduledTransferView(),
       binding: ClientBinding(),
     ),
-    GetPage(name: AppRoutes.CLIENT_TRANSFER_HISTORY,
-    page: () => ClientTransferView(),
-    binding: ClientBinding()
-    )
+    GetPage(
+        name: AppRoutes.CLIENT_TRANSFER_HISTORY,
+        page: () => ClientTransferView(),
+        binding: ClientBinding())
   ];
 }
 

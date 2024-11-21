@@ -56,4 +56,28 @@ class TransactionProvider {
       // Logique d'exécution du transfert
     }
   }
+
+  Future<List<TransactionModel>> getTransactionsByType({
+    required TransactionType type,
+    required DateTime startDate,
+    required DateTime endDate,
+    required String distributorId,
+  }) async {
+    try {
+      var querySnapshot = await _firestore
+          .collection('transactions')
+          .where('type', isEqualTo: type.toString())
+          .where('timestamp', isGreaterThanOrEqualTo: startDate)
+          .where('timestamp', isLessThanOrEqualTo: endDate)
+          .where('metadata.distributorId', isEqualTo: distributorId)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => TransactionModel.fromJson(doc.data()))
+          .toList();
+    } catch (e) {
+      print('Erreur lors de la récupération des transactions par type : $e');
+      return [];
+    }
+  }
 }

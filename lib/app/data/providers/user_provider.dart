@@ -70,4 +70,6 @@ class UserProvider {
       rethrow;
     }
   }
+
+  updateUserLimit(String s, double amount) {}
 }

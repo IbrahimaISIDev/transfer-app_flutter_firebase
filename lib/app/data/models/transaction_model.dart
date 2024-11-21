@@ -4,6 +4,7 @@ enum TransactionType {
   transfer,
   deposit,
   withdrawal,
+  unlimit,
 }
 
 class TransactionModel {
@@ -15,6 +16,8 @@ class TransactionModel {
   final DateTime? timestamp;
   final String? description;
   final DateTime? scheduledDate;
+  final String status;
+  final Map<String, String> metadata;
 
   TransactionModel({
     this.id,
@@ -25,8 +28,11 @@ class TransactionModel {
     this.timestamp,
     this.description,
     this.scheduledDate,
+    required this.status,
+    required this.metadata,
   });
 
+  // Factory pour construire un modèle à partir d'un JSON
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
       id: json['id'] as String?,
@@ -37,13 +43,13 @@ class TransactionModel {
       timestamp: (json['timestamp'] as Timestamp?)?.toDate(),
       description: json['description'] as String?,
       scheduledDate: (json['scheduledDate'] as Timestamp?)?.toDate(),
+      status: json['status'] as String? ?? '',
+      metadata: Map<String, String>.from(json['metadata'] ?? {}),
     );
   }
 
-  get receiverPhone => null;
 
-  get date => null;
-
+  // Méthode pour convertir un modèle en JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -55,9 +61,12 @@ class TransactionModel {
       'description': description,
       'scheduledDate':
           scheduledDate != null ? Timestamp.fromDate(scheduledDate!) : null,
+      'status': status,
+      'metadata': metadata,
     };
   }
 
+  // Parse le type de transaction depuis une chaîne de caractères
   static TransactionType _parseTransactionType(String? typeString) {
     switch (typeString) {
       case 'transfer':
@@ -66,6 +75,8 @@ class TransactionModel {
         return TransactionType.deposit;
       case 'withdrawal':
         return TransactionType.withdrawal;
+      case 'unlimit':
+        return TransactionType.unlimit;
       default:
         throw ArgumentError('Invalid transaction type: $typeString');
     }

@@ -66,7 +66,7 @@ class ClientTransactionController extends GetxController {
           receiverId: receiver.id!,
           amount: amount,
           timestamp: DateTime.now(),
-          type: TransactionType.transfer);
+          type: TransactionType.transfer, status: '', metadata: {});
 
       await _transactionProvider.createTransaction(transaction);
 
@@ -137,7 +137,7 @@ class ClientTransactionController extends GetxController {
           amount: amount,
           timestamp: DateTime.now(),
           scheduledDate: scheduledDate,
-          type: TransactionType.transfer);
+          type: TransactionType.transfer, status: '', metadata: {});
 
       await _transactionProvider.createScheduledTransaction(transaction);
       Get.snackbar('Succès', 'Transfert programmé créé');

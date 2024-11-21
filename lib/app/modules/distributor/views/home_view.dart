@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:money_transfer_app/app/routes/app_routes.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/operation_controller.dart';
 import 'package:intl/intl.dart';
 
 class DistributorHomeView extends GetView<DistributorHomeController> {
-  final DistributorOperationController operationController = 
-    Get.put(DistributorOperationController());
+  final DistributorOperationController operationController =
+      Get.put(DistributorOperationController());
 
   @override
   Widget build(BuildContext context) {
@@ -84,30 +85,30 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
             ),
             const SizedBox(height: 8),
             Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  controller.isBalanceVisible.value
-                      ? '${controller.balance.value.toStringAsFixed(2)} F CFA'
-                      : '••••••',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    controller.isBalanceVisible.value
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                    color: Colors.white,
-                  ),
-                  onPressed: controller.toggleBalanceVisibility,
-                ),
-              ],
-            )),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      controller.isBalanceVisible.value
+                          ? '${controller.balance.value.toStringAsFixed(2)} F CFA'
+                          : '•••••••••••',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        controller.isBalanceVisible.value
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.white,
+                      ),
+                      onPressed: controller.toggleBalanceVisibility,
+                    ),
+                  ],
+                )),
           ],
         ),
       ),
@@ -134,7 +135,7 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
                 icon: Icons.add_circle_outline,
                 title: 'Dépôt',
                 color: Colors.green,
-                onTap: () => _showDepositDialog(),
+                onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_DEPOSIT),
               ),
             ),
             const SizedBox(width: 16),
@@ -143,7 +144,16 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
                 icon: Icons.remove_circle_outline,
                 title: 'Retrait',
                 color: Colors.orange,
-                onTap: () => _showWithdrawalDialog(),
+                onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_WITHDRAWAL),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildOperationButton(
+                icon: Icons.upgrade,
+                title: 'Déplafond',
+                color: Colors.purple,
+                onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_UNLIMIT_VIEW),
               ),
             ),
           ],
@@ -206,50 +216,51 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
         ),
         const SizedBox(height: 16),
         Obx(() => ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.transactions.length,
-          itemBuilder: (context, index) {
-            var transaction = controller.transactions[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(
-                  backgroundColor: _getTransactionColor(transaction.type as String),
-                  child: Icon(
-                    _getTransactionIcon(transaction.type as String),
-                    color: Colors.white,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: controller.transactions.length,
+              itemBuilder: (context, index) {
+                var transaction = controller.transactions[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-                title: Text(
-                  _getTransactionTitle(transaction.type as String),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16),
+                    leading: CircleAvatar(
+                      backgroundColor:
+                          _getTransactionColor(transaction.type as String),
+                      child: Icon(
+                        _getTransactionIcon(transaction.type as String),
+                        color: Colors.white,
+                      ),
+                    ),
+                    title: Text(
+                      _getTransactionTitle(transaction.type as String),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // subtitle: Text(
+                    //   DateFormat('dd/MM/yyyy HH:mm').format(transaction.timestamp),
+                    //   style: TextStyle(
+                    //     color: Colors.grey[600],
+                    //     fontSize: 12,
+                    //   ),
+                    // ),
+                    trailing: Text(
+                      '${transaction.amount.toStringAsFixed(2)} F CFA',
+                      style: TextStyle(
+                        color: _getTransactionColor(transaction.type as String),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
-                ),
-                // subtitle: Text(
-                //   DateFormat('dd/MM/yyyy HH:mm').format(transaction.timestamp),
-                //   style: TextStyle(
-                //     color: Colors.grey[600],
-                //     fontSize: 12,
-                //   ),
-                // ),
-                trailing: Text(
-                  '${transaction.amount.toStringAsFixed(2)} F CFA',
-                  style: TextStyle(
-                    color: _getTransactionColor(transaction.type as String),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            );
-          },
-        )),
+                );
+              },
+            )),
       ],
     );
   }
@@ -287,133 +298,39 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
     }
   }
 
-void _showLogoutConfirmation(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        title: const Text('Déconnexion'),
-        content: const Text('Voulez-vous vraiment vous déconnecter ?'),
-        actions: [
-          TextButton(
-            child: const Text('Annuler'),
-            onPressed: () => Navigator.of(context).pop(),
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+          title: const Text('Déconnexion'),
+          content: const Text('Voulez-vous vraiment vous déconnecter ?'),
+          actions: [
+            TextButton(
+              child: const Text('Annuler'),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            child: const Text('Déconnexion'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              controller.logout();
-              // Redirection vers la page de connexion après la déconnexion
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-
-  void _showOperationDialog({
-    required String title,
-    required Function() onConfirm,
-  }) {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: operationController.phoneController,
-                decoration: InputDecoration(
-                  labelText: 'Numéro de téléphone',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.phone),
-                ),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: operationController.amountController,
-                decoration: InputDecoration(
-                  labelText: 'Montant',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.euro),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: const Text('Annuler'),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      onConfirm();
-                      Get.back();
-                    },
-                    child: const Text('Confirmer'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showDepositDialog() {
-    _showOperationDialog(
-      title: 'Effectuer un dépôt',
-      onConfirm: operationController.performDeposit,
-    );
-  }
-
-  void _showWithdrawalDialog() {
-    _showOperationDialog(
-      title: 'Effectuer un retrait',
-      onConfirm: operationController.performWithdrawal,
+              child: const Text('Déconnexion'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                controller.logout();
+                // Redirection vers la page de connexion après la déconnexion
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

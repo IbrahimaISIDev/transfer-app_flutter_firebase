@@ -19,6 +19,12 @@ class UserModel {
     this.balance = 0.0,
   });
 
+  // Define the canDeposit getter
+  bool get canDeposit {
+    // Example logic: only clients can deposit
+    return userType == UserType.distributor;
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'email': email,
@@ -32,8 +38,7 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     try {
       return UserModel(
-        id: json['id']
-            ?.toString(), // Assurez-vous que l'ID peut être converti en chaîne
+        id: json['id']?.toString(),
         email: json['email']?.toString() ?? '',
         phoneNumber: json['phoneNumber']?.toString() ?? '',
         fullName: json['fullName']?.toString(),
