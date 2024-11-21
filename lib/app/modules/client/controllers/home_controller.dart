@@ -25,7 +25,7 @@ class ClientHomeController extends GetxController {
       currentUser.value = await _firebaseService.getUserDetails(userId);
       
       if (currentUser.value != null) {
-        balance.value = currentUser.value!.balance ?? 0.0;
+        balance.value = currentUser.value!.balance;
         transactions.value = await _firebaseService.getUserTransactions();
       }
     } catch (e) {

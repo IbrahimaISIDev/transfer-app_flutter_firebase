@@ -51,8 +51,8 @@ class TransactionProvider {
         .where('scheduledDate', isLessThanOrEqualTo: now)
         .get();
 
+    // ignore: unused_local_variable
     for (var doc in scheduledTransactions.docs) {
-      var transaction = TransactionModel.fromJson(doc.data());
       // Logique d'exécution du transfert
     }
   }

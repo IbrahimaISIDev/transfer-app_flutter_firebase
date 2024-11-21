@@ -306,7 +306,6 @@ class UnlimitView extends GetView<DistributorOperationController> {
     );
   }
 
-  @override
   void dispose() {
     scannerController.dispose();
   }
