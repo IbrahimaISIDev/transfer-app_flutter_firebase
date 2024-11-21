@@ -50,40 +50,42 @@ class _ClientHomeViewState extends State<ClientHomeView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bienvenue',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[600],
-                      fontSize: 14,
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bienvenue',
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  Obx(() => Text(
-                        controller.userName,
-                        style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )),
-                  Obx(() => Text(
-                        controller.userEmail,
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[500],
-                          fontSize: 14,
-                        ),
-                      )),
-                  Obx(() => Text(
-                        controller.userPhone,
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[500],
-                          fontSize: 14,
-                        ),
-                      )),
-                ],
+                    Obx(() => Text(
+                          controller.userName,
+                          style: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )),
+                    Obx(() => Text(
+                          controller.userEmail,
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[500],
+                            fontSize: 12,
+                          ),
+                        )),
+                    Obx(() => Text(
+                          controller.userPhone,
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[500],
+                            fontSize: 14,
+                          ),
+                        )),
+                  ],
+                ),
               ),
               Row(
                 children: [
@@ -286,7 +288,7 @@ class _ClientHomeViewState extends State<ClientHomeView> {
                 ),
               ),
               TextButton(
-                onPressed: () => Get.toNamed(AppRoutes.CLIENT_TRANSACTIONS),
+                onPressed: () => Get.toNamed(AppRoutes.CLIENT_TRANSFER_HISTORY),
                 child: Text(
                   'Voir tout',
                   style: GoogleFonts.poppins(
@@ -399,7 +401,7 @@ class _ClientHomeViewState extends State<ClientHomeView> {
               ),
               const SizedBox(height: 20),
               QrImageView(
-                data: controller.currentUser.value?.id ?? '',
+                data: controller.currentUser.value?.phoneNumber ?? '',
                 version: QrVersions.auto,
                 size: 200,
               ),

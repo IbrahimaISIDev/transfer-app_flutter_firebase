@@ -5,7 +5,7 @@ abstract class AppRoutes {
 
   // Routes Client
   static const CLIENT_HOME = '/client/home';
-  static const CLIENT_TRANSACTIONS = '/client/transactions';
+  // static const CLIENT_TRANSACTIONS = '/client/transactions';
   static const CLIENT_TRANSFER_SIMPLE = '/client-transfer-simple';
   static const CLIENT_TRANSFER_MULTIPLE = '/client-transfer-multiple';
   static const CLIENT_TRANSFER_SCHEDULED = '/client-transfer-scheduled';

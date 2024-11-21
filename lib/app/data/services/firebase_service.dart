@@ -319,7 +319,8 @@ class FirebaseService {
       throw Exception('Échec du retrait : ${e.toString()}');
     }
   }
-   // Méthode pour créer un transfert
+
+  // Méthode pour créer un transfert
   Future<void> createTransfer(String receiverPhone, double amount) async {
     try {
       String senderId = getCurrentUserId();
@@ -630,6 +631,74 @@ class FirebaseService {
       throw e;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<bool> canCancelTransaction(TransactionModel transaction) async {
+    // Check if transaction is within 30 minutes
+    final now = DateTime.now();
+    final transactionTime = transaction.timestamp;
+
+    if (transactionTime == null) {
+      return false;
+    }
+
+    final timeDifference = now.difference(transactionTime);
+    if (timeDifference.inMinutes > 30) {
+      return false;
+    }
+
+    // Check if receiver balance contains the transaction amount
+    try {
+      DocumentSnapshot receiverDoc = await _firestore
+          .collection('users')
+          .doc(transaction.receiverId)
+          .get();
+
+      double receiverBalance =
+          (receiverDoc.data() as Map<String, dynamic>)['balance'] ?? 0.0;
+
+      // Verify receiver has sufficient balance to reverse
+      if (receiverBalance < transaction.amount) {
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print('Error checking transaction cancellation: $e');
+      return false;
+    }
+  }
+
+  Future<void> cancelTransaction(TransactionModel transaction) async {
+    try {
+      // Verify cancellation is possible
+      bool canCancel = await canCancelTransaction(transaction);
+      if (!canCancel) {
+        throw Exception('Transaction cannot be cancelled');
+      }
+
+      WriteBatch batch = _firestore.batch();
+
+      // Reverse balance transfers
+      batch.update(_firestore.collection('users').doc(transaction.senderId!),
+          {'balance': FieldValue.increment(transaction.amount)});
+
+      batch.update(_firestore.collection('users').doc(transaction.receiverId!),
+          {'balance': FieldValue.increment(-transaction.amount)});
+
+      // Mark transaction as cancelled
+      DocumentReference transactionRef =
+          _firestore.collection('transactions').doc(transaction.id);
+
+      batch.update(transactionRef, {
+        'status': 'cancelled',
+        'cancellationTimestamp': FieldValue.serverTimestamp()
+      });
+
+      await batch.commit();
+    } catch (e) {
+      throw Exception('Transaction cancellation failed: $e');
     }
   }
 }

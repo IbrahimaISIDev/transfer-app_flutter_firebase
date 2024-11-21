@@ -151,4 +151,17 @@ class ClientTransactionController extends GetxController {
       print('Detailed scheduled transfer error: $e');
     }
   }
+
+  Future<void> cancelTransaction(TransactionModel transaction) async {
+    try {
+      await _firebaseService.cancelTransaction(transaction);
+
+      // Optional: Refresh transactions after cancellation
+      await fetchTransactions();
+
+      Get.snackbar('Succès', 'Transaction annulée');
+    } catch (e) {
+      Get.snackbar('Erreur', 'Impossible d\'annuler la transaction : $e');
+    }
+  }
 }

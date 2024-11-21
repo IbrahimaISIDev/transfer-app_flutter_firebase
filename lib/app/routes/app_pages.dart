@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:money_transfer_app/app/modules/client/views/transaction_history.dart';
 import 'package:money_transfer_app/app/modules/client/views/transfer_multiple.dart';
 import 'package:money_transfer_app/app/modules/client/views/transfer_schedule.dart';
 import 'package:money_transfer_app/app/modules/client/views/transfer_view.dart';
@@ -61,7 +62,7 @@ class AppPages {
     ),
     GetPage(
         name: AppRoutes.CLIENT_TRANSFER_HISTORY,
-        page: () => ClientTransferView(),
+        page: () => const TransactionHistoryView(),
         binding: ClientBinding())
   ];
 }
