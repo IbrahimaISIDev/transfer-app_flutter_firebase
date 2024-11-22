@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/transaction_controller.dart';
+import '../../../controllers/transaction_controller.dart';
 
 class ClientMultipleTransferView extends GetView<ClientTransactionController> {
   final _formKey = GlobalKey<FormState>();

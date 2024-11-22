@@ -243,7 +243,7 @@ class FirebaseService {
   // Méthode pour créer un dépôt
   Future<void> createDeposit(String userPhone, double amount) async {
     try {
-      // Trouver l'utilisateur par numéro de téléphone
+      // 1. Trouver l'utilisateur par numéro de téléphone
       QuerySnapshot userQuery = await _firestore
           .collection('users')
           .where('phoneNumber', isEqualTo: userPhone)
@@ -255,31 +255,60 @@ class FirebaseService {
       }
 
       String userId = userQuery.docs.first.id;
+      String distributorId = getCurrentUserId();
 
-      // Mettre à jour le solde
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .update({'balance': FieldValue.increment(amount)});
+      // 2. Démarrer une transaction Firestore pour garantir l'atomicité
+      await _firestore.runTransaction((transaction) async {
+        // 2.1 Vérifier le solde du distributeur
+        DocumentSnapshot distributorDoc = await transaction
+            .get(_firestore.collection('users').doc(distributorId));
 
-      // Enregistrer la transaction
-      await _firestore.collection('transactions').add({
-        'senderId': getCurrentUserId(), // L'ID du distributeur
-        'receiverId': userId,
-        'amount': amount,
-        'type': 'deposit',
-        'timestamp': FieldValue.serverTimestamp(),
-        'description': 'Dépôt en espèces'
+        if (!distributorDoc.exists) {
+          throw Exception('Distributeur non trouvé');
+        }
+
+        double distributorBalance =
+            (distributorDoc.data() as Map<String, dynamic>)['balance'] ?? 0.0;
+
+        // 2.2 Vérifier si le distributeur a assez d'argent
+        if (distributorBalance < amount) {
+          throw Exception(
+              'Solde distributeur insuffisant pour effectuer le dépôt');
+        }
+
+        // 2.3 Mettre à jour le solde du client (augmenter)
+        transaction.update(_firestore.collection('users').doc(userId),
+            {'balance': FieldValue.increment(amount)});
+
+        // 2.4 Mettre à jour le solde du distributeur (diminuer)
+        transaction.update(_firestore.collection('users').doc(distributorId),
+            {'balance': FieldValue.increment(-amount)});
+
+        // 2.5 Enregistrer la transaction
+        DocumentReference transactionRef =
+            _firestore.collection('transactions').doc();
+        transaction.set(transactionRef, {
+          'id': transactionRef.id,
+          'senderId': distributorId,
+          'receiverId': userId,
+          'amount': amount,
+          'type': 'deposit',
+          'timestamp': FieldValue.serverTimestamp(),
+          'description': 'Dépôt en espèces',
+          'metadata': {
+            'phoneNumber': userPhone,
+            'distributorId': distributorId,
+          }
+        });
       });
     } catch (e) {
       throw Exception('Échec du dépôt : ${e.toString()}');
     }
   }
 
-  // Méthode pour créer un retrait
   Future<void> createWithdrawal(String userPhone, double amount) async {
     try {
-      // Trouver l'utilisateur par numéro de téléphone
+      // 1. Trouver l'utilisateur par numéro de téléphone
       QuerySnapshot userQuery = await _firestore
           .collection('users')
           .where('phoneNumber', isEqualTo: userPhone)
@@ -291,29 +320,46 @@ class FirebaseService {
       }
 
       String userId = userQuery.docs.first.id;
-      DocumentSnapshot userDoc = userQuery.docs.first;
+      String distributorId = getCurrentUserId();
 
-      // Vérifier le solde suffisant
-      double currentBalance =
-          (userDoc.data() as Map<String, dynamic>)['balance'] ?? 0.0;
-      if (currentBalance < amount) {
-        throw Exception('Solde insuffisant');
-      }
+      // 2. Démarrer une transaction Firestore pour garantir l'atomicité
+      await _firestore.runTransaction((transaction) async {
+        // 2.1 Vérifier le solde du client
+        DocumentSnapshot userDoc =
+            await transaction.get(_firestore.collection('users').doc(userId));
 
-      // Mettre à jour le solde
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .update({'balance': FieldValue.increment(-amount)});
+        double userBalance =
+            (userDoc.data() as Map<String, dynamic>)['balance'] ?? 0.0;
 
-      // Enregistrer la transaction
-      await _firestore.collection('transactions').add({
-        'senderId': userId,
-        'receiverId': getCurrentUserId(), // L'ID du distributeur
-        'amount': amount,
-        'type': 'withdrawal',
-        'timestamp': FieldValue.serverTimestamp(),
-        'description': 'Retrait en espèces'
+        // 2.2 Vérifier si le client a assez d'argent
+        if (userBalance < amount) {
+          throw Exception('Solde client insuffisant');
+        }
+
+        // 2.3 Mettre à jour le solde du client (diminuer)
+        transaction.update(_firestore.collection('users').doc(userId),
+            {'balance': FieldValue.increment(-amount)});
+
+        // 2.4 Mettre à jour le solde du distributeur (augmenter)
+        transaction.update(_firestore.collection('users').doc(distributorId),
+            {'balance': FieldValue.increment(amount)});
+
+        // 2.5 Enregistrer la transaction
+        DocumentReference transactionRef =
+            _firestore.collection('transactions').doc();
+        transaction.set(transactionRef, {
+          'id': transactionRef.id,
+          'senderId': userId,
+          'receiverId': distributorId,
+          'amount': amount,
+          'type': 'withdrawal',
+          'timestamp': FieldValue.serverTimestamp(),
+          'description': 'Retrait en espèces',
+          'metadata': {
+            'phoneNumber': userPhone,
+            'distributorId': distributorId,
+          }
+        });
       });
     } catch (e) {
       throw Exception('Échec du retrait : ${e.toString()}');
@@ -635,7 +681,7 @@ class FirebaseService {
   }
 
   Future<bool> canCancelTransaction(TransactionModel transaction) async {
-    // Check if transaction is within 30 minutes
+    // Vérifier si la transaction date de moins de 30 minutes
     final now = DateTime.now();
     final transactionTime = transaction.timestamp;
 
@@ -648,7 +694,7 @@ class FirebaseService {
       return false;
     }
 
-    // Check if receiver balance contains the transaction amount
+    // Vérifier si le destinataire a toujours les fonds
     try {
       DocumentSnapshot receiverDoc = await _firestore
           .collection('users')
@@ -658,47 +704,110 @@ class FirebaseService {
       double receiverBalance =
           (receiverDoc.data() as Map<String, dynamic>)['balance'] ?? 0.0;
 
-      // Verify receiver has sufficient balance to reverse
+      // Vérifier que le destinataire a suffisamment de fonds pour l'annulation
       if (receiverBalance < transaction.amount) {
         return false;
       }
 
       return true;
     } catch (e) {
-      print('Error checking transaction cancellation: $e');
+      print('Erreur lors de la vérification de l\'annulation: $e');
       return false;
     }
   }
 
   Future<void> cancelTransaction(TransactionModel transaction) async {
     try {
-      // Verify cancellation is possible
+      // Vérifier si l'annulation est possible
       bool canCancel = await canCancelTransaction(transaction);
       if (!canCancel) {
-        throw Exception('Transaction cannot be cancelled');
+        throw Exception('La transaction ne peut pas être annulée');
       }
 
       WriteBatch batch = _firestore.batch();
 
-      // Reverse balance transfers
-      batch.update(_firestore.collection('users').doc(transaction.senderId!),
-          {'balance': FieldValue.increment(transaction.amount)});
+      // Récupérer les documents des utilisateurs pour vérification
+      DocumentSnapshot senderDoc =
+          await _firestore.collection('users').doc(transaction.senderId).get();
+      DocumentSnapshot receiverDoc = await _firestore
+          .collection('users')
+          .doc(transaction.receiverId)
+          .get();
 
-      batch.update(_firestore.collection('users').doc(transaction.receiverId!),
-          {'balance': FieldValue.increment(-transaction.amount)});
+      if (!senderDoc.exists || !receiverDoc.exists) {
+        throw Exception('Utilisateur non trouvé');
+      }
 
-      // Mark transaction as cancelled
+      // Effectuer le remboursement en fonction du type de transaction
+      switch (transaction.type) {
+        case 'deposit':
+          // Pour un dépôt : retirer l'argent du compte du destinataire et le remettre au distributeur
+          batch.update(
+              _firestore.collection('users').doc(transaction.receiverId!),
+              {'balance': FieldValue.increment(-transaction.amount)});
+          break;
+
+        case 'withdrawal':
+          // Pour un retrait : remettre l'argent sur le compte du client
+          batch.update(
+              _firestore.collection('users').doc(transaction.senderId!),
+              {'balance': FieldValue.increment(transaction.amount)});
+          break;
+
+        case 'transfer':
+          // Pour un transfert : retirer du compte destinataire et remettre à l'expéditeur
+          batch.update(
+              _firestore.collection('users').doc(transaction.senderId!),
+              {'balance': FieldValue.increment(transaction.amount)});
+          batch.update(
+              _firestore.collection('users').doc(transaction.receiverId!),
+              {'balance': FieldValue.increment(-transaction.amount)});
+          break;
+
+        default:
+          throw Exception('Type de transaction non reconnu');
+      }
+
+      // Marquer la transaction comme annulée
       DocumentReference transactionRef =
           _firestore.collection('transactions').doc(transaction.id);
 
       batch.update(transactionRef, {
         'status': 'cancelled',
-        'cancellationTimestamp': FieldValue.serverTimestamp()
+        'cancellationTimestamp': FieldValue.serverTimestamp(),
+        'cancellationReason': 'Annulation demandée par l\'utilisateur'
+      });
+
+      // Créer une nouvelle transaction d'annulation pour traçabilité
+      DocumentReference newTransactionRef =
+          _firestore.collection('transactions').doc();
+      batch.set(newTransactionRef, {
+        'originalTransactionId': transaction.id,
+        'senderId': transaction.receiverId, // Inversé pour l'annulation
+        'receiverId': transaction.senderId, // Inversé pour l'annulation
+        'amount': transaction.amount,
+        'type': 'cancellation',
+        'timestamp': FieldValue.serverTimestamp(),
+        'description': 'Annulation de la transaction ${transaction.id}',
+        'status': 'completed'
       });
 
       await batch.commit();
+
+      // Notification de succès
+      Get.snackbar(
+        'Succès',
+        'La transaction a été annulée avec succès',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      throw Exception('Transaction cancellation failed: $e');
+      print('Erreur lors de l\'annulation: $e');
+      Get.snackbar(
+        'Erreur',
+        'L\'annulation de la transaction a échoué: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      throw Exception('L\'annulation de la transaction a échoué: $e');
     }
   }
 }

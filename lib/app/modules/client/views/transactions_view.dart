@@ -125,19 +125,4 @@ class TransactionDetailView extends StatelessWidget {
     );
   }
 
-  // bool _isTransactionCancellable() {
-  //   // Vérifier si la transaction est récente (moins de 30 minutes)
-  //   if (transaction.timestamp == null) return false;
-
-  //   final now = DateTime.now();
-  //   final timeDifference = now.difference(transaction.timestamp!);
-
-  //   // Conditions pour l'annulation
-  //   bool isWithin30Minutes = timeDifference.inMinutes <= 30;
-  //   bool isNotAlreadyCancelled =
-  //       transaction.status.toLowerCase() != 'cancelled';
-  //   bool isTransferType = transaction.type == TransactionType.transfer;
-
-  //   return isWithin30Minutes && isNotAlreadyCancelled && isTransferType;
-  // }
 }
