@@ -23,7 +23,7 @@ class DistributorUnlimitController extends GetxController {
   static const double MIN_UNLIMIT_AMOUNT =
       10000; // Montant minimum de déplafonnement
   static const double MAX_UNLIMIT_AMOUNT =
-      1000000; // Montant maximum de déplafonnement
+      1500000; // Montant maximum de déplafonnement
   static const int MAX_MONTHLY_UNLIMIT_TRANSACTIONS =
       2; // Max 2 déplafonnements par mois
 

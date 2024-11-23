@@ -6,8 +6,8 @@ class GlobalBindings implements Bindings {
   @override
   void dependencies() {
     // Services
-    Get.lazyPut<FirebaseService>(() => FirebaseService());
-    
+    Get.put<FirebaseService>(FirebaseService(), permanent: true); // Initialisation immédiate
+
     // Controllers
     Get.lazyPut<AuthController>(() => AuthController());
   }

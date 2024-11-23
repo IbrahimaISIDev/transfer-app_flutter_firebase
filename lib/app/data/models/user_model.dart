@@ -23,7 +23,7 @@ class UserModel {
     this.agentCode,
     required this.userType,
     this.balance = 0.0,
-    this.monthlyTransactionLimit = 200000.0, // Valeur par défaut.
+    this.monthlyTransactionLimit = 1500000.0, // Valeur par défaut.
   });
 
   /// Vérifie si l'utilisateur peut déposer de l'argent.

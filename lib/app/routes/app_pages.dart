@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/client_home_view.dart';
+import 'package:money_transfer_app/app/modules/client/views/home/transfer/client_transfer_view.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_multiple.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_schedule.dart';
-import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_view.dart';
 import 'package:money_transfer_app/app/modules/client/views/transaction_history.dart';
 import 'package:money_transfer_app/app/modules/distributor/views/deplafonnement_view.dart';
 import 'package:money_transfer_app/app/modules/distributor/views/deposit_view.dart';

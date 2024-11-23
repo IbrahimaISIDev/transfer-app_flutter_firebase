@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:money_transfer_app/app/data/models/favorite_model.dart';
 import 'package:money_transfer_app/app/data/models/user_model.dart';
 import '../models/transaction_model.dart';
 
@@ -11,11 +12,17 @@ class FirebaseService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   String getCurrentUserId() {
-    final currentUser = _auth.currentUser;
-    if (currentUser == null) {
-      throw Exception('No user is currently logged in');
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("Aucun utilisateur connecté.");
+      }
+      return user.uid;
+    } catch (e) {
+      print('Erreur dans getCurrentUserId: $e');
+      throw Exception(
+          'FirebaseService n\'est pas correctement initialisé : $e');
     }
-    return currentUser.uid;
   }
 
   // Connexion
@@ -191,6 +198,37 @@ class FirebaseService {
     }
   }
 
+  // Future<void> getUserFavorite(FavoriteModel user) async {
+  //   await _firestore.collection('users').doc(user.userId).update({
+  //     'favorite': user.favorite,
+  //   });
+  // }
+
+  // Future<List<TransactionModel>> getPaginatedTransactions({
+  //   required int limit,
+  //   DateTime? lastTimestamp,
+  // }) async {
+  //   try {
+  //     var query = FirebaseFirestore.instance
+  //         .collection('transactions')
+  //         .where('userId', isEqualTo: getCurrentUserId())
+  //         .orderBy('timestamp', descending: true)
+  //         .limit(limit);
+
+  //     if (lastTimestamp != null) {
+  //       query = query.startAfter([lastTimestamp]);
+  //     }
+
+  //     final snapshot = await query.get();
+  //     return snapshot.docs
+  //         .map((doc) => TransactionModel.fromJson(doc.data()))
+  //         .toList();
+  //   } catch (e) {
+  //     print('Error getting paginated transactions: $e');
+  //     return [];
+  //   }
+  // }
+
   Future<void> updateUserBalance(String userId, double amount) async {
     await _firestore.collection('users').doc(userId).update({
       'balance': FieldValue.increment(amount),
@@ -214,6 +252,7 @@ class FirebaseService {
         .map((doc) => TransactionModel.fromJson(doc.data()))
         .toList();
   }
+
   // Mise à jour de la méthode logout pour inclure Google
   Future<void> logout() async {
     try {

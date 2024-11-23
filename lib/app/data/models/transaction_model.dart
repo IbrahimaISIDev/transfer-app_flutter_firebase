@@ -50,6 +50,8 @@ class TransactionModel {
     );
   }
 
+  get date => null;
+
   // Méthode pour convertir un modèle en JSON
   Map<String, dynamic> toJson() {
     return {
