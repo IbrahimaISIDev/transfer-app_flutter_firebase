@@ -9,6 +9,13 @@ class DistributorHomeController extends GetxController {
   final RxBool isBalanceVisible = true.obs;
   final RxList<TransactionModel> transactions = <TransactionModel>[].obs;
 
+  // final RxBool isBalanceVisible = false.obs;
+
+  // Methods to modify these observable variables
+  void toggleBalanceVisibility() {
+    isBalanceVisible.value = !isBalanceVisible.value;
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -24,9 +31,9 @@ class DistributorHomeController extends GetxController {
     transactions.value = await _firebaseService.getUserTransactions();
   }
 
-  void toggleBalanceVisibility() {
-    isBalanceVisible.toggle();
-  }
+  // void toggleBalanceVisibility() {
+  //   isBalanceVisible.toggle();
+  // }
 
   Future<void> makeDeposit(
     String userPhone, 

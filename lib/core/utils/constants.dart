@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const primary = Color(0xFF1E88E5);
+  static const primary = Color.fromARGB(255, 95, 1, 121);
   static const secondary = Color(0xFF1565C0);
   static const background = Color(0xFFF5F5F5);
   static const surface = Colors.white;
@@ -23,7 +23,7 @@ class AppStyles {
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      borderSide: const BorderSide(color: Color(0xC78903A3), width: 2),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),

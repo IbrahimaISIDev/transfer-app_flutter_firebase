@@ -1,24 +1,24 @@
 import 'package:get/get.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/client_home_view.dart';
-import 'package:money_transfer_app/app/modules/client/views/transaction_history.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_multiple.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_schedule.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_view.dart';
+import 'package:money_transfer_app/app/modules/client/views/transaction_history.dart';
 import 'package:money_transfer_app/app/modules/distributor/views/deplafonnement_view.dart';
 import 'package:money_transfer_app/app/modules/distributor/views/deposit_view.dart';
-import 'package:money_transfer_app/app/modules/distributor/views/home/distributor_home_view.dart';
 import 'package:money_transfer_app/app/modules/distributor/views/withdrawal_view.dart';
+import 'package:money_transfer_app/app/modules/home/welcome_home_screen.dart';
 import 'package:money_transfer_app/app/routes/app_routes.dart';
-import '../modules/home/welcome_home_screen.dart';
 import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/client/bindings/client_binding.dart';
+import '../modules/distributor/views/home_view.dart';
 import '../modules/distributor/bindings/distributor_binding.dart';
 
 class AppPages {
   static final routes = [
-    GetPage(name: AppRoutes.INITIAL, page: () => const WelcomeView()),
+    GetPage(name: AppRoutes.INITIAL, page: () => const WelcomeScreen()),
     GetPage(
         name: AppRoutes.LOGIN, page: () => LoginView(), binding: AuthBinding()),
     GetPage(

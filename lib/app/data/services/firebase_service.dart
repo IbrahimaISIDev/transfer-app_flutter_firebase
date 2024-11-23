@@ -214,20 +214,6 @@ class FirebaseService {
         .map((doc) => TransactionModel.fromJson(doc.data()))
         .toList();
   }
-
-  // Déconnexion
-  // Future<void> logout() async {
-  //   try {
-  //     // S'assurer que toutes les données locales sont effacées
-  //     await _auth.signOut();
-  //     // Vider le cache Firestore si nécessaire
-  //     await _firestore.clearPersistence();
-  //   } catch (e) {
-  //     print('Erreur lors de la déconnexion: $e');
-  //     rethrow;
-  //   }
-  // }
-
   // Mise à jour de la méthode logout pour inclure Google
   Future<void> logout() async {
     try {

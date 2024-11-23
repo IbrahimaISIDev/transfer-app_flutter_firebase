@@ -44,9 +44,18 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1  # Mise à jour pour les dernières règles de linting
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/
-    - assets/icons/
+    - assets/images/samaxaalis.jpeg    
+    - assets/fonts/
+  
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/samaxaalis.jpeg"
+
+
+
