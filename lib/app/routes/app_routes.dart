@@ -6,6 +6,12 @@ abstract class AppRoutes {
   static const PHONE_LOGIN = '/phone-login';
   static const VERIFY_OTP = '/verify-otp';
 
+  // Routes  Profile Utilisateur
+  static const USER_PROFILE = '/profile';
+  static const USER_PROFILE_EDIT = '/user-profile/edit';
+  static const USER_PROFILE_CHANGE_PASSWORD = '/user-profile/change-password';
+  
+
   // Routes Client
   static const CLIENT_HOME = '/client/home';
   // static const CLIENT_TRANSACTIONS = '/client/transactions';

@@ -6,7 +6,7 @@ class OperationsSection extends StatelessWidget {
 
   const OperationsSection({
     Key? key,
-    required this.operations,
+    required this.operations, required Future? Function() onDepositTap, required Future? Function() onWithdrawalTap, required Future? Function() onUnlimitTap,
   }) : super(key: key);
 
   @override

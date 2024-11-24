@@ -60,14 +60,14 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue[700]!, Colors.blue[900]!],
+            colors: [Colors.purple[700]!, Colors.purple[900]!],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.3),
+              color: Colors.purple.withOpacity(0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -134,7 +134,7 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
           children: [
             Expanded(
               child: _buildOperationButton(
-                icon: Icons.add_circle_outline,
+                icon: Icons.arrow_upward,
                 title: 'Dépôt',
                 color: Colors.green,
                 onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_DEPOSIT),
@@ -143,9 +143,9 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
             const SizedBox(width: 16),
             Expanded(
               child: _buildOperationButton(
-                icon: Icons.remove_circle_outline,
+                icon: Icons.arrow_downward,
                 title: 'Retrait',
-                color: Colors.orange,
+                color: Colors.red,
                 onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_WITHDRAWAL),
               ),
             ),
@@ -359,3 +359,26 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
     );
   }
 }
+
+/* 
+  Widget _buildOperationsSection() {
+    final List<OperationButtonData> operations = [
+      OperationButtonData(
+        icon: Icons.arrow_upward,
+        title: 'Dépôt',
+        color: Colors.green,
+        onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_DEPOSIT),
+      ),
+      OperationButtonData(
+        icon: Icons.arrow_downward,
+        title: 'Retrait',
+        color: Colors.red,
+        onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_WITHDRAWAL),
+      ),
+      OperationButtonData(
+        icon: Icons.remove_circle_outline,
+        title: 'Unlimit',
+        color: Colors.blue,
+        onTap: () => Get.toNamed(AppRoutes.DISTRIBUTOR_UNLIMIT_VIEW),
+      ),
+    ]; */

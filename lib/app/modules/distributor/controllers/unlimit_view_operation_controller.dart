@@ -149,4 +149,25 @@ class DistributorUnlimitController extends GetxController {
     amountController.dispose();
     super.onClose();
   }
+
+  // Méthode pour changer le mode de saisie
+  void setInputMode(InputMode mode) {
+    inputMode.value = mode;
+  }
+
+  // Méthode pour traiter le résultat du scan QR
+  void handleQRScanResult(String? scannedData) {
+    if (scannedData != null && scannedData.isNotEmpty) {
+      phoneController.text = scannedData;
+      setInputMode(InputMode.manual); // Retour au mode manuel après le scan
+    }
+  }
+
+  void performUnlimit() {
+    // Validate that fields are not empty
+    if (phoneController.text.isEmpty || amountController.text.isEmpty) {
+      Get.snackbar('Erreur', 'Veuillez remplir tous les champs');
+      return;
+    }
+  }
 }

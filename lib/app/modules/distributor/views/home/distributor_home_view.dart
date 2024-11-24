@@ -62,14 +62,14 @@ class DistributorHomeView extends GetView<DistributorHomeController> {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue[700]!, Colors.blue[900]!],
+            colors: [Colors.purple[700]!, Colors.purple[900]!],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.3),
+              color: Colors.purple.withOpacity(0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),

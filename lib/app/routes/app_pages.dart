@@ -6,11 +6,13 @@ import 'package:money_transfer_app/app/modules/client/views/home/transfer/transf
 import 'package:money_transfer_app/app/modules/client/views/otp_verification.dart';
 import 'package:money_transfer_app/app/modules/client/views/phone_verification.dart';
 import 'package:money_transfer_app/app/modules/client/views/transaction_history.dart';
-import 'package:money_transfer_app/app/modules/distributor/views/deplafonnement_view.dart';
-import 'package:money_transfer_app/app/modules/distributor/views/deposit_view.dart';
-import 'package:money_transfer_app/app/modules/distributor/views/withdrawal_view.dart';
 import 'package:money_transfer_app/app/modules/home/welcome_home_screen.dart';
+import 'package:money_transfer_app/app/modules/profile/bindings/profile_binding.dart';
+import 'package:money_transfer_app/app/modules/profile/views/profile_view.dart';
 import 'package:money_transfer_app/app/routes/app_routes.dart';
+import 'package:money_transfer_app/shared/views/deposit_view.dart';
+import 'package:money_transfer_app/shared/views/unlimit_view.dart';
+import 'package:money_transfer_app/shared/views/withdrawal_view.dart';
 import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
@@ -78,6 +80,11 @@ class AppPages {
         name: AppRoutes.VERIFY_OTP,
         page: () => OtpVerificationView(),
         binding: AuthBinding()),
+    GetPage(
+      name:AppRoutes.USER_PROFILE,
+      page: () => ProfileView(),
+      binding: ProfileBinding(),
+    )
   ];
 }
 
