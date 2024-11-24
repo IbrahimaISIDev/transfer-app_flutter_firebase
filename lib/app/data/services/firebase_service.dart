@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:money_transfer_app/app/data/models/favorite_model.dart';
 import 'package:money_transfer_app/app/data/models/user_model.dart';
 import '../models/transaction_model.dart';
 
@@ -197,12 +197,6 @@ class FirebaseService {
       rethrow;
     }
   }
-
-  // Future<void> getUserFavorite(FavoriteModel user) async {
-  //   await _firestore.collection('users').doc(user.userId).update({
-  //     'favorite': user.favorite,
-  //   });
-  // }
 
   // Future<List<TransactionModel>> getPaginatedTransactions({
   //   required int limit,
@@ -599,111 +593,114 @@ class FirebaseService {
     }
   }
 
-  Future<void> verifyPhoneNumber({
-    required String phoneNumber,
-    required Function(String verificationId, int? resendToken) onCodeSent,
-    required Function(String errorMessage) onError,
-  }) async {
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto-verification sur Android
-          await _auth.signInWithCredential(credential);
-          final userId = _auth.currentUser?.uid;
-          if (userId != null) {
-            final userDoc =
-                await _firestore.collection('users').doc(userId).get();
-            if (!userDoc.exists) {
-              await _auth.signOut();
-              throw Exception('Compte utilisateur incomplet');
-            }
-          }
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          String message = 'Une erreur est survenue';
-          switch (e.code) {
-            case 'invalid-phone-number':
-              message = 'Numéro de téléphone invalide';
-              break;
-            case 'too-many-requests':
-              message = 'Trop de tentatives, réessayez plus tard';
-              break;
-          }
-          onError(message);
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          onCodeSent(verificationId, resendToken);
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {},
-        timeout: const Duration(seconds: 60),
-      );
-    } catch (e) {
-      onError(e.toString());
-    }
-  }
+  // Future<void> verifyPhoneNumber({
+  //   required String phoneNumber,
+  //   required Function(String verificationId, int? resendToken) onCodeSent,
+  //   required Function(String errorMessage) onError,
+  // }) async {
+  //   try {
+  //     await _auth.verifyPhoneNumber(
+  //       phoneNumber: phoneNumber,
+  //       verificationCompleted: (PhoneAuthCredential credential) async {
+  //         // Auto-verification sur Android
+  //         await _auth.signInWithCredential(credential);
+  //         final userId = _auth.currentUser?.uid;
+  //         if (userId != null) {
+  //           final userDoc =
+  //               await _firestore.collection('users').doc(userId).get();
+  //           if (!userDoc.exists) {
+  //             await _auth.signOut();
+  //             throw Exception('Compte utilisateur incomplet');
+  //           }
+  //         }
+  //       },
+  //       verificationFailed: (FirebaseAuthException e) {
+  //         String message = 'Une erreur est survenue';
+  //         switch (e.code) {
+  //           case 'invalid-phone-number':
+  //             message = 'Numéro de téléphone invalide';
+  //             break;
+  //           case 'too-many-requests':
+  //             message = 'Trop de tentatives, réessayez plus tard';
+  //             break;
+  //           case 'operation-not-allowed':
+  //             message = 'L\'authentification par téléphone n\'est pas activée';
+  //             break;
+  //         }
+  //         onError(message);
+  //       },
+  //       codeSent: (String verificationId, int? resendToken) {
+  //         onCodeSent(verificationId, resendToken);
+  //       },
+  //       codeAutoRetrievalTimeout: (String verificationId) {},
+  //       timeout: const Duration(seconds: 60),
+  //     );
+  //   } catch (e) {
+  //     onError(e.toString());
+  //   }
+  // }
 
-  // Vérifier le code OTP
-  Future<void> verifyOTP({
-    required String verificationId,
-    required String smsCode,
-    required RxBool isLoading,
-  }) async {
-    try {
-      isLoading.value = true;
+  // // Vérifier le code OTP
+  // Future<void> verifyOTP({
+  //   required String verificationId,
+  //   required String smsCode,
+  //   required RxBool isLoading,
+  // }) async {
+  //   try {
+  //     isLoading.value = true;
 
-      // Créer les credentials
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: smsCode,
-      );
+  //     // Créer les credentials
+  //     PhoneAuthCredential credential = PhoneAuthProvider.credential(
+  //       verificationId: verificationId,
+  //       smsCode: smsCode,
+  //     );
 
-      // Connexion avec les credentials
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+  //     // Connexion avec les credentials
+  //     UserCredential userCredential =
+  //         await _auth.signInWithCredential(credential);
 
-      // Vérifier si l'utilisateur existe dans Firestore
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
+  //     // Vérifier si l'utilisateur existe dans Firestore
+  //     final userDoc = await _firestore
+  //         .collection('users')
+  //         .doc(userCredential.user!.uid)
+  //         .get();
 
-      if (!userDoc.exists) {
-        await _auth.signOut();
-        throw Exception('Compte utilisateur non trouvé');
-      }
+  //     if (!userDoc.exists) {
+  //       await _auth.signOut();
+  //       throw Exception('Compte utilisateur non trouvé');
+  //     }
 
-      print('Connexion par téléphone réussie');
-      Get.snackbar(
-        'Succès',
-        'Connexion réussie',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } catch (e) {
-      print('Erreur de vérification OTP: $e');
-      String errorMessage = 'Code de vérification incorrect';
+  //     print('Connexion par téléphone réussie');
+  //     Get.snackbar(
+  //       'Succès',
+  //       'Connexion réussie',
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //   } catch (e) {
+  //     print('Erreur de vérification OTP: $e');
+  //     String errorMessage = 'Code de vérification incorrect';
 
-      if (e is FirebaseAuthException) {
-        switch (e.code) {
-          case 'invalid-verification-code':
-            errorMessage = 'Code de vérification invalide';
-            break;
-          case 'invalid-verification-id':
-            errorMessage = 'Session de vérification expirée';
-            break;
-        }
-      }
+  //     if (e is FirebaseAuthException) {
+  //       switch (e.code) {
+  //         case 'invalid-verification-code':
+  //           errorMessage = 'Code de vérification invalide';
+  //           break;
+  //         case 'invalid-verification-id':
+  //           errorMessage = 'Session de vérification expirée';
+  //           break;
+  //       }
+  //     }
 
-      Get.snackbar(
-        'Erreur',
-        errorMessage,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      throw e;
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  //     Get.snackbar(
+  //       'Erreur',
+  //       errorMessage,
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //     throw e;
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   Future<bool> canCancelTransaction(TransactionModel transaction) async {
     // Vérifier si la transaction date de moins de 30 minutes
@@ -833,6 +830,160 @@ class FirebaseService {
         snackPosition: SnackPosition.BOTTOM,
       );
       throw Exception('L\'annulation de la transaction a échoué: $e');
+    }
+  }
+
+  Future<void> verifyPhoneNumber({
+    required String phoneNumber,
+    required Function(String verificationId, int? resendToken) onCodeSent,
+    required Function(String errorMessage) onError,
+  }) async {
+    try {
+      // Vérifier le format du numéro pour la France/Sénégal
+      if (!phoneNumber.startsWith('+221') && !phoneNumber.startsWith('+33')) {
+        onError('Le numéro doit commencer par +221 (Sénégal) ou +33 (France)');
+        return;
+      }
+
+      await _auth.setSettings(
+        appVerificationDisabledForTesting: false,
+        phoneNumber: phoneNumber,
+        smsCode: null,
+      );
+
+      await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          try {
+            final userCredential = await _auth.signInWithCredential(credential);
+            final userId = userCredential.user?.uid;
+
+            if (userId != null) {
+              final userDoc =
+                  await _firestore.collection('utilisateurs').doc(userId).get();
+              if (!userDoc.exists) {
+                await _auth.signOut();
+                onError(
+                    'Compte utilisateur non trouvé dans la base de données');
+                return;
+              }
+            }
+          } catch (e) {
+            onError(
+                'Erreur lors de la vérification automatique: ${e.toString()}');
+          }
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          String message;
+
+          switch (e.code) {
+            case 'invalid-phone-number':
+              message =
+                  'Format du numéro invalide. Utilisez le format +221XXXXXXXXX';
+              break;
+            case 'too-many-requests':
+              message =
+                  'Trop de tentatives. Veuillez réessayer dans quelques minutes';
+              break;
+            case 'operation-not-allowed':
+              message = 'Service de vérification par SMS non activé';
+              break;
+            case 'billing-not-enabled':
+              message = 'Service de facturation Firebase non activé';
+              break;
+            default:
+              message = 'Erreur: ${e.message ?? "Erreur inconnue"}';
+          }
+
+          onError(message);
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          Get.snackbar(
+            'Code envoyé',
+            'Un SMS avec le code de vérification a été envoyé',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green[100],
+            duration: const Duration(seconds: 3),
+          );
+          onCodeSent(verificationId, resendToken);
+        },
+        codeAutoRetrievalTimeout: (_) {
+          Get.snackbar(
+            'Délai expiré',
+            'Le délai de saisie du code est expiré. Veuillez réessayer.',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.orange[100],
+          );
+        },
+        timeout: const Duration(seconds: 120),
+      );
+    } catch (e) {
+      onError('Erreur inattendue: ${e.toString()}');
+    }
+  }
+
+  Future<void> verifyOTP({
+    required String verificationId,
+    required String smsCode,
+    required RxBool isLoading,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        await _auth.signOut();
+        throw Exception('Compte utilisateur non trouvé');
+      }
+
+      Get.snackbar(
+        'Succès',
+        'Connexion réussie',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      // Rediriger vers la page appropriée selon le rôle
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final userRole = userData['role'] as String?;
+
+      if (userRole == 'client') {
+        Get.offAllNamed('/client/home');
+      } else if (userRole == 'distributor') {
+        Get.offAllNamed('/distributor/home');
+      }
+    } catch (e) {
+      String errorMessage = 'Code de vérification incorrect';
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'invalid-verification-code':
+            errorMessage = 'Code de vérification invalide';
+            break;
+          case 'invalid-verification-id':
+            errorMessage = 'Session de vérification expirée';
+            break;
+        }
+      }
+
+      Get.snackbar(
+        'Erreur',
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      throw e;
+    } finally {
+      isLoading.value = false;
     }
   }
 }

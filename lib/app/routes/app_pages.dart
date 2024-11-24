@@ -3,6 +3,8 @@ import 'package:money_transfer_app/app/modules/client/views/home/client_home_vie
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/client_transfer_view.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_multiple.dart';
 import 'package:money_transfer_app/app/modules/client/views/home/transfer/transfer_schedule.dart';
+import 'package:money_transfer_app/app/modules/client/views/otp_verification.dart';
+import 'package:money_transfer_app/app/modules/client/views/phone_verification.dart';
 import 'package:money_transfer_app/app/modules/client/views/transaction_history.dart';
 import 'package:money_transfer_app/app/modules/distributor/views/deplafonnement_view.dart';
 import 'package:money_transfer_app/app/modules/distributor/views/deposit_view.dart';
@@ -63,7 +65,19 @@ class AppPages {
     GetPage(
         name: AppRoutes.CLIENT_TRANSFER_HISTORY,
         page: () => const TransactionHistoryView(),
-        binding: ClientBinding())
+        binding: ClientBinding()),
+    // GetPage(
+    //     name: AppRoutes.SETTINGS,
+    //     page: () => LimitedTransferView(),
+    //     binding: ClientBinding())
+    GetPage(
+        name: AppRoutes.PHONE_LOGIN,
+        page: () => PhoneLoginView(),
+        binding: AuthBinding()),
+    GetPage(
+        name: AppRoutes.VERIFY_OTP,
+        page: () => OtpVerificationView(),
+        binding: AuthBinding()),
   ];
 }
 

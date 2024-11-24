@@ -4,6 +4,7 @@ import 'package:money_transfer_app/app/data/models/favorite_model.dart';
 
 class FavoritesProvider {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final int pageSize = 5;
 
   Future<bool> isFavorite(String userId, String recipientPhone) async {
     final QuerySnapshot result = await _firestore
@@ -23,17 +24,44 @@ class FavoritesProvider {
         .set(favorite.toJson());
   }
 
-  Future<List<FavoriteModel>> getUserFavorites(String userId) async {
-    final QuerySnapshot snapshot = await _firestore
-        .collection('favorites')
-        .where('userId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
-        .get();
+  // Future<List<FavoriteModel>> getUserFavorites(String userId) async {
+  //   final QuerySnapshot snapshot = await _firestore
+  //       .collection('favorites')
+  //       .where('userId', isEqualTo: userId)
+  //       .orderBy('createdAt', descending: true)
+  //       .get();
 
-    return snapshot.docs
-        .map(
-            (doc) => FavoriteModel.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
+  //   return snapshot.docs
+  //       .map(
+  //           (doc) => FavoriteModel.fromJson(doc.data() as Map<String, dynamic>))
+  //       .toList();
+  // }
+
+  Future<List<FavoriteModel>> getUserFavorites(
+    String userId, {
+    DocumentSnapshot? lastDocument,
+  }) async {
+    try {
+      Query query = _firestore
+          .collection('favorites')
+          .where('userId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .limit(pageSize);
+
+      if (lastDocument != null) {
+        query = query.startAfterDocument(lastDocument);
+      }
+
+      final querySnapshot = await query.get();
+
+      return querySnapshot.docs
+          .map((doc) =>
+              FavoriteModel.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error fetching favorites: $e');
+      rethrow;
+    }
   }
 
   Future<void> removeFavorite(String userId, String favoriteId) async {
