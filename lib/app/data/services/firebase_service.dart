@@ -593,115 +593,6 @@ class FirebaseService {
     }
   }
 
-  // Future<void> verifyPhoneNumber({
-  //   required String phoneNumber,
-  //   required Function(String verificationId, int? resendToken) onCodeSent,
-  //   required Function(String errorMessage) onError,
-  // }) async {
-  //   try {
-  //     await _auth.verifyPhoneNumber(
-  //       phoneNumber: phoneNumber,
-  //       verificationCompleted: (PhoneAuthCredential credential) async {
-  //         // Auto-verification sur Android
-  //         await _auth.signInWithCredential(credential);
-  //         final userId = _auth.currentUser?.uid;
-  //         if (userId != null) {
-  //           final userDoc =
-  //               await _firestore.collection('users').doc(userId).get();
-  //           if (!userDoc.exists) {
-  //             await _auth.signOut();
-  //             throw Exception('Compte utilisateur incomplet');
-  //           }
-  //         }
-  //       },
-  //       verificationFailed: (FirebaseAuthException e) {
-  //         String message = 'Une erreur est survenue';
-  //         switch (e.code) {
-  //           case 'invalid-phone-number':
-  //             message = 'Numéro de téléphone invalide';
-  //             break;
-  //           case 'too-many-requests':
-  //             message = 'Trop de tentatives, réessayez plus tard';
-  //             break;
-  //           case 'operation-not-allowed':
-  //             message = 'L\'authentification par téléphone n\'est pas activée';
-  //             break;
-  //         }
-  //         onError(message);
-  //       },
-  //       codeSent: (String verificationId, int? resendToken) {
-  //         onCodeSent(verificationId, resendToken);
-  //       },
-  //       codeAutoRetrievalTimeout: (String verificationId) {},
-  //       timeout: const Duration(seconds: 60),
-  //     );
-  //   } catch (e) {
-  //     onError(e.toString());
-  //   }
-  // }
-
-  // // Vérifier le code OTP
-  // Future<void> verifyOTP({
-  //   required String verificationId,
-  //   required String smsCode,
-  //   required RxBool isLoading,
-  // }) async {
-  //   try {
-  //     isLoading.value = true;
-
-  //     // Créer les credentials
-  //     PhoneAuthCredential credential = PhoneAuthProvider.credential(
-  //       verificationId: verificationId,
-  //       smsCode: smsCode,
-  //     );
-
-  //     // Connexion avec les credentials
-  //     UserCredential userCredential =
-  //         await _auth.signInWithCredential(credential);
-
-  //     // Vérifier si l'utilisateur existe dans Firestore
-  //     final userDoc = await _firestore
-  //         .collection('users')
-  //         .doc(userCredential.user!.uid)
-  //         .get();
-
-  //     if (!userDoc.exists) {
-  //       await _auth.signOut();
-  //       throw Exception('Compte utilisateur non trouvé');
-  //     }
-
-  //     print('Connexion par téléphone réussie');
-  //     Get.snackbar(
-  //       'Succès',
-  //       'Connexion réussie',
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //   } catch (e) {
-  //     print('Erreur de vérification OTP: $e');
-  //     String errorMessage = 'Code de vérification incorrect';
-
-  //     if (e is FirebaseAuthException) {
-  //       switch (e.code) {
-  //         case 'invalid-verification-code':
-  //           errorMessage = 'Code de vérification invalide';
-  //           break;
-  //         case 'invalid-verification-id':
-  //           errorMessage = 'Session de vérification expirée';
-  //           break;
-  //       }
-  //     }
-
-  //     Get.snackbar(
-  //       'Erreur',
-  //       errorMessage,
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //     throw e;
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
-
   Future<bool> canCancelTransaction(TransactionModel transaction) async {
     // Vérifier si la transaction date de moins de 30 minutes
     final now = DateTime.now();
@@ -762,21 +653,21 @@ class FirebaseService {
 
       // Effectuer le remboursement en fonction du type de transaction
       switch (transaction.type) {
-        case 'deposit':
+        case TransactionType.deposit:
           // Pour un dépôt : retirer l'argent du compte du destinataire et le remettre au distributeur
           batch.update(
               _firestore.collection('users').doc(transaction.receiverId!),
               {'balance': FieldValue.increment(-transaction.amount)});
           break;
 
-        case 'withdrawal':
+        case TransactionType.withdrawal:
           // Pour un retrait : remettre l'argent sur le compte du client
           batch.update(
               _firestore.collection('users').doc(transaction.senderId!),
               {'balance': FieldValue.increment(transaction.amount)});
           break;
 
-        case 'transfer':
+        case TransactionType.transfer:
           // Pour un transfert : retirer du compte destinataire et remettre à l'expéditeur
           batch.update(
               _firestore.collection('users').doc(transaction.senderId!),
@@ -785,6 +676,10 @@ class FirebaseService {
               _firestore.collection('users').doc(transaction.receiverId!),
               {'balance': FieldValue.increment(-transaction.amount)});
           break;
+
+        case TransactionType.unlimit:
+          throw Exception(
+              'Les transactions unlimit ne peuvent pas être annulées');
 
         default:
           throw Exception('Type de transaction non reconnu');

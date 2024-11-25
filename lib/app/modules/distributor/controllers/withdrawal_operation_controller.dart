@@ -139,6 +139,9 @@ class DistributorWithdrawalController extends GetxController {
           timestamp: DateTime.now(),
           type: TransactionType.withdrawal,
           status: WithdrawalStatus.pending.toString(),
+          feeAmount: 0.0,
+          userPaidFee: false,
+          feePercentage: 0.0,
           metadata: {
             'phoneNumber': phoneNumber,
             'distributorId': _firebaseService.getCurrentUserId(),

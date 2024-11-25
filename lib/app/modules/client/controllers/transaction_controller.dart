@@ -8,6 +8,8 @@ import 'package:money_transfer_app/app/data/providers/favorites_provider.dart';
 import 'package:money_transfer_app/app/data/providers/transaction_provider.dart';
 import 'package:money_transfer_app/app/data/providers/user_provider.dart';
 import 'package:money_transfer_app/app/data/services/firebase_service.dart';
+import 'package:money_transfer_app/app/modules/client/views/home/transfer/widgets/frequency_selector.dart';
+
 
 class ClientTransactionController extends GetxController {
   // Providers et Services
@@ -35,9 +37,54 @@ class ClientTransactionController extends GetxController {
     }
   }
 
-  // Voici la nouvelle méthode createTransfer
-  Future<void> createTransfer(String phoneNumber, double amount) async {
+  // New method to preview transfer amounts
+  // Map<String, double> previewTransferAmounts(double amount,
+  //     {bool userPaidFee = false}) {
+  //   return _transactionProvider.calculateTransferAmounts(amount,
+  //       userPaidFee: userPaidFee);
+  // }
+
+  Map<String, double> previewTransferAmounts(double amount,
+      {required bool userPaidFee}) {
+    const double feePercentage = 0.02; // Exemple de frais de 2%
+    double feeAmount = amount * feePercentage;
+
+    if (userPaidFee) {
+      return {
+        'totalAmount': amount + feeAmount,
+        'receivableAmount': amount,
+        'feeAmount': feeAmount,
+      };
+    } else {
+      return {
+        'totalAmount': amount,
+        'receivableAmount': amount - feeAmount,
+        'feeAmount': feeAmount,
+      };
+    }
+  }
+
+  Future<void> fetchTransactionsByType(TransactionType type) async {
     try {
+      String currentUserId = _firebaseService.getCurrentUserId();
+      transactions.value = await _transactionProvider.getUserTransactionsByType(
+          currentUserId, type);
+    } catch (e) {
+      Get.snackbar('Erreur', 'Impossible de charger les transactions filtrées');
+    }
+  }
+
+  // Voici la nouvelle méthode createTransfer
+  Future<void> createTransfer(String phoneNumber, double amount,
+      {bool userPaidFee = false}) async {
+    try {
+      // Calculate transfer amounts
+      var transferDetails =
+          previewTransferAmounts(amount, userPaidFee: userPaidFee);
+
+      // Use the appropriate total amount for balance check
+      double totalAmountToDeduct = transferDetails['totalAmount']!;
+
       // 1. Validation des entrées
       if (phoneNumber.isEmpty) {
         Get.snackbar('Erreur', 'Le numéro de téléphone est requis');
@@ -86,7 +133,7 @@ class ClientTransactionController extends GetxController {
       }
 
       // 7. Vérifier le solde suffisant
-      if (currentUser.balance < amount) {
+      if (currentUser.balance < totalAmountToDeduct) {
         Get.snackbar('Erreur', 'Solde insuffisant');
         return;
       }
@@ -108,6 +155,9 @@ class ClientTransactionController extends GetxController {
         },
         timestamp: DateTime.now(),
         description: 'Transfert à ${receiver.fullName ?? receiver.phoneNumber}',
+        feeAmount: transferDetails['feeAmount']!,
+        userPaidFee: userPaidFee,
+        feePercentage: TransactionProvider.BASE_FEE_PERCENTAGE,
       );
 
       // 9. Démarrer une transaction Firestore
@@ -208,7 +258,7 @@ class ClientTransactionController extends GetxController {
   }
 
   Future<void> createScheduledTransfer(
-      String phoneNumber, double amount, DateTime scheduledDate) async {
+      String phoneNumber, double amount, DateTime scheduledDate, {required TransferFrequency frequency}) async {
     try {
       var receiver = await _userProvider.getUserByPhone(phoneNumber);
 
@@ -217,12 +267,12 @@ class ClientTransactionController extends GetxController {
         return;
       }
 
-      // Valider la date de transfert programmé
-      if (scheduledDate.isBefore(DateTime.now())) {
-        Get.snackbar(
-            'Erreur', 'La date de transfert programmé doit être future');
-        return;
-      }
+      // // Valider la date de transfert programmé
+      // if (scheduledDate.isBefore(DateTime.now())) {
+      //   Get.snackbar(
+      //       'Erreur', 'La date de transfert programmé doit être future');
+      //   return;
+      // }
 
       // Vérifier le solde de l'expéditeur pour un transfert programmé
       String currentUserId = _firebaseService.getCurrentUserId();
@@ -241,7 +291,11 @@ class ClientTransactionController extends GetxController {
           timestamp: DateTime.now(),
           scheduledDate: scheduledDate,
           type: TransactionType.transfer,
-          status: '',
+          status: 'pending',
+          feeAmount: 0.0,
+          userPaidFee: false,
+          feePercentage: 0.0,
+          description: 'Transfert programmé à ${receiver.fullName?? receiver.phoneNumber}',
           metadata: {});
 
       await _transactionProvider.createScheduledTransaction(transaction);
@@ -289,5 +343,9 @@ class ClientTransactionController extends GetxController {
     } catch (e) {
       print('Erreur lors de l\'ajout aux favoris: $e');
     }
+  }
+
+  Object getCurrentUserId() {
+    return _firebaseService.getCurrentUserId();
   }
 }

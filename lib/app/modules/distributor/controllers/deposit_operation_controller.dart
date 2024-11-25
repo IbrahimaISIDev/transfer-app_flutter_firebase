@@ -139,7 +139,10 @@ class DistributorDepositController extends GetxController {
         amount: amount,
         timestamp: DateTime.now(),
         type: TransactionType.deposit,
-        status: DepositStatus.pending.toString(), // Convert to string
+        status: DepositStatus.pending.toString(),
+        feeAmount: 0.0,
+        userPaidFee: false,
+        feePercentage: 0.0, // Convert to string
         metadata: {
           'phoneNumber': phoneNumber,
           'distributorId': _firebaseService.getCurrentUserId(),

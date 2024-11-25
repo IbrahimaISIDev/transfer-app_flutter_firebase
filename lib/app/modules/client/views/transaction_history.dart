@@ -60,7 +60,7 @@ class TransactionHistoryView extends GetView<ClientTransactionController> {
                     color: Colors.blue.shade600,
                   ),
                   onTap: () {
-                    Get.to(() => TransactionDetailView(
+                    Get.to(() => TransactionListView(
                           transaction: transaction,
                           controller: controller,
                         ));
@@ -74,51 +74,4 @@ class TransactionHistoryView extends GetView<ClientTransactionController> {
     );
   }
 }
-
-// class TransactionDetailView extends StatelessWidget {
-//   final dynamic transaction;
-
-//   const TransactionDetailView({super.key, required this.transaction});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Détails de la Transaction'),
-//         centerTitle: true,
-//         backgroundColor: Colors.blue,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               'Montant: ${transaction.amount} F CFA',
-//               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-//             ),
-//             const SizedBox(height: 16),
-//             Text(
-//               'Destinataire: ${transaction.receiverId}',
-//               style: const TextStyle(fontSize: 18),
-//             ),
-//             const SizedBox(height: 16),
-//             Text(
-//               'Date: ${transaction.timestamp?.toLocal()}',
-//               style: const TextStyle(fontSize: 18),
-//             ),
-//             const SizedBox(height: 16),
-//             Text(
-//               'Statut: ${transaction.status}',
-//               style: const TextStyle(fontSize: 18),
-//             ),
-            
-//             // Ajoutez ici d'autres détails que vous souhaitez afficher pour la transaction
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 

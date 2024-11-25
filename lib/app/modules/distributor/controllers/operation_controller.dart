@@ -6,7 +6,9 @@ import 'package:money_transfer_app/app/data/providers/user_provider.dart';
 import 'package:money_transfer_app/app/data/services/firebase_service.dart';
 
 enum InputMode { manual, scanner }
+
 enum DepositStatus { pending, approved, rejected }
+
 enum OperationType { deposit, withdrawal, unlimit }
 
 class DistributorOperationController extends GetxController {
@@ -107,7 +109,6 @@ class DistributorOperationController extends GetxController {
 
       clearFields();
       await _updateDepositTotals();
-      
     } catch (e) {
       errorMessage.value = 'Une erreur est survenue: ${e.toString()}';
     } finally {
@@ -143,6 +144,9 @@ class DistributorOperationController extends GetxController {
       type: TransactionType.withdrawal,
       status: 'completed',
       metadata: {'phoneNumber': phoneNumber},
+      feeAmount: 0.0,
+      userPaidFee: false,
+      feePercentage: 0.0,
     );
 
     await _transactionProvider.createTransaction(transaction);
@@ -163,6 +167,9 @@ class DistributorOperationController extends GetxController {
       type: TransactionType.unlimit,
       status: 'completed',
       metadata: {'phoneNumber': phoneNumber},
+      feeAmount: 0.0,
+      userPaidFee: false,
+      feePercentage: 0.0,
     );
 
     await _transactionProvider.createTransaction(transaction);

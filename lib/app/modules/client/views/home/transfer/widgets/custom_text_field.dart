@@ -1,26 +1,35 @@
+// widgets/custom_text_field.dart
 import 'package:flutter/material.dart';
 
-class AmountFormField extends StatelessWidget {
+class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
-  final void Function(String)? onChanged; // Add onChanged parameter
+  final String hintText;
+  final IconData prefixIcon;
+  final String? suffixText;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
 
-  const AmountFormField({
+  const CustomTextField({
     super.key,
     required this.controller,
-    this.onChanged, // Initialize it in the constructor
+    required this.hintText,
+    required this.prefixIcon,
+    this.suffixText,
+    this.keyboardType,
+    this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      keyboardType: TextInputType.number,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
-        hintText: 'Montant à envoyer',
-        suffixText: 'FCFA',
-        prefixIcon: const Icon(
-          Icons.account_balance_wallet_outlined,
-          color: Color(0xFF4C6FFF),
+        hintText: hintText,
+        suffixText: suffixText,
+        prefixIcon: Icon(
+          prefixIcon,
+          color: const Color(0xFF4C6FFF),
         ),
         filled: true,
         fillColor: Colors.white,
@@ -40,19 +49,7 @@ class AmountFormField extends StatelessWidget {
           ),
         ),
       ),
-      validator: _validateAmount,
-      onChanged: onChanged, // Pass it to the TextFormField
+      validator: validator,
     );
-  }
-
-  String? _validateAmount(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Montant requis';
-    }
-    final amount = double.tryParse(value);
-    if (amount == null || amount <= 0) {
-      return 'Montant invalide';
-    }
-    return null;
   }
 }
